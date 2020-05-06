@@ -82,4 +82,14 @@ mod profile_zome {
     fn get_my_address() -> ZomeApiResult<Address> {
         Ok(hdk::AGENT_ADDRESS.clone())
     }
+
+    #[zome_fn("hc_public")]
+    fn get_my_profile() -> ZomeApiResult<Vec<Profile>> {
+        profile::handlers::get_my_profile()
+    }
+
+    #[zome_fn("hc_public")]
+    fn delete_profile(username: String) -> ZomeApiResult<bool> {
+        profile::handlers::delete_profile(username)
+    }
 }

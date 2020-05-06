@@ -1,7 +1,8 @@
 module.exports = (scenario, conductorConfig) => {
     // Register a scenario, which is a function that gets a special API injected in
     // TATS: this first line is just a boiler plate then sa string you can just specify what scenario you are creating 
-  scenario("create_profile", async (s, t) => {
+  
+    scenario("create_profile", async (s, t) => {
     const {alice, bob} = await s.players({alice: conductorConfig, bob: conductorConfig}, true)
     const create_profile_result_alice　= await alice.call("example_dna", "profiles", "create_profile", {"username":"aLiCeGiRl"})
     const create_profile_result_bob = await bob.call("example_dna", "profiles", "create_profile", {"username":"Alexander"})
@@ -41,6 +42,41 @@ module.exports = (scenario, conductorConfig) => {
     const get_username_alice_result = await alice.call("example_dna", "profiles", "get_username", {"agent_address": get_my_address_result.Ok})
     t.deepEqual(get_all_agents_result.Ok.length, 1)
     t.deepEqual(get_username_alice_result.Ok, "alice123")
+  })
+
+  scenario("delete_profile", async (s, t) => {
+    const {alice, bob} = await s.players({alice: conductorConfig, bob: conductorConfig}, true)
+    
+    // create profiles for alice and bob
+    const create_profile_result_alice　= await alice.call("example_dna", "profiles", "create_profile", {"username":"AliceInWonderland"})
+    const create_profile_result_bob = await bob.call("example_dna", "profiles", "create_profile", {"username": "BobMarley"})
+    await s.consistency()
+    
+    // test if profile creation succeeded
+    // const get_profile_result_alice = await alice.call("example_dna", "profiles", "get_my_profile", {})
+    // t.deepEqual(get_profile_result_alice.Ok.length, 1)
+
+    // delete alice's profile
+    const delete_profile_result_alice = await alice.call("example_dna", "profiles", "delete_profile", {"username": "AliceInWonderland"})
+    s.consistency()
+
+    // test return value
+    t.deepEqual(delete_profile_result_alice.Ok, true)
+    
+    // test profile deletion
+    const get_profile_result_alice = await alice.call("example_dna", "profiles", "get_my_profile", {})
+    t.deepEqual(get_profile_result_alice.Ok.length, 0)
+    
+    // test username deletion
+    const alice_address = await alice.call("example_dna", "profiles", "get_my_address", {})
+    const get_username_result_alice = await alice.call("example_dna", "profiles", "get_username", {"agent_address": alice_address.Ok})
+    t.deepEqual(get_username_result_alice.Ok, null)
+
+    // delete a profile that doesn't exist
+    const delete_profile_result_alice_2 = await alice.call("example_dna", "profiles", "delete_profile", {"username": "AliceInWonderland"})
+    s.consistency()
+    t.deepEqual(delete_profile_result_alice_2.Err, {"Internal":"There is no profile associated with this agent"})
+
   })
 
 //   scenario("list_profiles", async (s, t) => {
