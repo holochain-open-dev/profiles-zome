@@ -85,4 +85,9 @@ mod profile_zome {
 
         Ok(hdk::AGENT_ADDRESS.clone())
     }
+
+    #[zome_fn("hc_public")]
+    fn delete_profile(username: String) -> ZomeApiResult<bool> {
+        profile::handlers::delete_profile(username)
+    }
 }
