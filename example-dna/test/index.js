@@ -47,6 +47,13 @@ function setUsername(username) {
     });
 }
 
+function getUsername(agentAddress) {
+  return (caller) =>
+    caller.call("profiles", "profiles", "get_username", {
+      agent_address: agentAddress,
+    });
+}
+
 function getAllAgents() {
   return (caller) => caller.call("profiles", "profiles", "get_all_agents", {});
 }
@@ -76,8 +83,11 @@ orchestrator.registerScenario("description of example test", async (s, t) => {
 
   result = await getAllAgents()(alice);
   t.equal(result.Ok.length, 2);
+
+  result = await getUsername(aliceAddress)(bob);
+  t.equal(result.Ok, "alice");
 });
 
-require('./profiles')(orchestrator.registerScenario, conductorConfig)
+require("./profiles")(orchestrator.registerScenario, conductorConfig);
 
 orchestrator.run();
