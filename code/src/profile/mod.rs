@@ -27,6 +27,7 @@ pub struct Profile {
 #[serde(rename_all = "snake_case")]
 pub struct Username {
     pub username: String,
+    pub agent_address: Address,
 }
 #[derive(Serialize, Deserialize, Debug, DefaultJson, Clone)]
 #[serde(rename_all = "snake_case")]
@@ -51,9 +52,10 @@ impl Profile {
 }
 
 impl Username {
-    pub fn new(username: String) -> Self {
+    pub fn new(username: String, agent_address: Address) -> Self {
         Username {
             username,
+            agent_address
         }
     }
 

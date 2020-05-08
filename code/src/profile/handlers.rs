@@ -30,7 +30,7 @@ use crate::profile::strings::*;
 /** Temporary Guillem solution **/
 
 pub fn set_username(username: String) -> ZomeApiResult<()> {
-    let new_username = Username::new(username.clone());
+    let new_username = Username::new(username.clone(), AGENT_ADDRESS.clone());
 
     let username_anchor = holochain_anchors::anchor(USERNAME_ANCHOR_TYPE.into(), USERNAMES_ANCHOR_TEXT.into())?;
 
@@ -54,7 +54,7 @@ pub fn set_username(username: String) -> ZomeApiResult<()> {
 }
 
 pub fn create_profile(username: String) -> ZomeApiResult<Profile> {
-    let new_username = Username::new(username.clone());
+    let new_username = Username::new(username.clone(), AGENT_ADDRESS.clone());
     let new_profile = Profile::new(new_username.clone());
     let username_entry = new_username.entry();
     let username_address = username_entry.address();
@@ -138,7 +138,7 @@ pub fn get_all_agents() -> ZomeApiResult<Vec<Username>> {
 
     hdk::utils::get_links_and_load_type(
         &username_anchor,
-        LinkMatch::Exactly(USERNAME_LINK_TYPE),
+        LinkMatch::Exactly(USERNAME_PROFILE_LINK_TYPE),
         LinkMatch::Any,
     )
 }
