@@ -6,9 +6,14 @@ export const profilesTypeDefs = gql`
     username: String
   }
 
+  type Me {
+    id: ID!
+    agent: Agent!
+  }
+
   extend type Query {
     allAgents: [Agent!]!
-    me: Agent!
+    me: Me!
   }
 
   extend type Mutation {

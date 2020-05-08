@@ -24,6 +24,11 @@ export const resolvers = {
       return { id: address };
     },
   },
+  Me: {
+    agent(parent) {
+      return { id: parent.id };
+    },
+  },
   Agent: {
     id(parent) {
       return parent.id;

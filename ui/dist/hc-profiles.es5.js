@@ -20,9 +20,14 @@ const profilesTypeDefs = gql `
     username: String
   }
 
+  type Me {
+    id: ID!
+    agent: Agent!
+  }
+
   extend type Query {
     allAgents: [Agent!]!
-    me: Agent!
+    me: Me!
   }
 
   extend type Mutation {
@@ -44,6 +49,11 @@ const resolvers = {
             const profilesProvider = container.get(ProfilesBindings.ProfilesProvider);
             const address = await profilesProvider.call('get_my_address', {});
             return { id: address };
+        },
+    },
+    Me: {
+        agent(parent) {
+            return { id: parent.id };
         },
     },
     Agent: {
