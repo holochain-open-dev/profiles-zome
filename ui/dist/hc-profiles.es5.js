@@ -41,7 +41,7 @@ const resolvers = {
             const profilesProvider = container.get(ProfilesBindings.ProfilesProvider);
             const allAgents = await profilesProvider.call('get_all_agents', {});
             return allAgents.map((agent) => ({
-                id: agent.agent_id,
+                id: agent.agent_address,
                 username: agent.username,
             }));
         },
