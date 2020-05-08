@@ -138,7 +138,7 @@ pub fn get_all_agents() -> ZomeApiResult<Vec<Username>> {
 
     hdk::utils::get_links_and_load_type(
         &username_anchor,
-        LinkMatch::Exactly(USERNAME_PROFILE_LINK_TYPE),
+        LinkMatch::Exactly(USERNAME_LINK_TYPE),
         LinkMatch::Any,
     )
 }
