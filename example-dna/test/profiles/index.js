@@ -1,98 +1,91 @@
+function setUsername(username) {
+  return (caller) =>
+    caller.call("profiles", "profiles", "set_username", {
+      username,
+    });
+}
+
+function getUsername(agentAddress) {
+  return (caller) =>
+    caller.call("profiles", "profiles", "get_username", {
+      agent_address: agentAddress,
+    });
+}
+
+function getAllAgents() {
+  return (caller) => caller.call("profiles", "profiles", "get_all_agents", {});
+}
+
+function deleteUsername(username) {
+  return (caller) => caller.call("profiles", "profiles", "delete_username", {"username":username})
+}
 module.exports = (scenario, conductorConfig) => {
     // Register a scenario, which is a function that gets a special API injected in
     // TATS: this first line is just a boiler plate then sa string you can just specify what scenario you are creating 
-  scenario("create_profile", async (s, t) => {
-    const {alice, bob} = await s.players({alice: conductorConfig, bob: conductorConfig}, true)
-    const create_profile_result_alice　= await alice.call("profiles", "profiles", "create_profile", {"username":"aLiCeGiRl"})
-    const create_profile_result_bob = await bob.call("profiles", "profiles", "create_profile", {"username":"Alexander"})
-    await s.consistency()
+  scenario("set_username", async (s, t) => {
+    const {alice, bob} = await s.players({alice: conductorConfig, bob: conductorConfig}, true);
+    const set_username_result_alice　= await setUsername("aLiCeGiRl")(alice);
+    const set_username_result_bob = await setUsername("bob")(bob);
     // TATS: check if all calls above returns Ok from rust
-    await s.consistency()
-    t.deepEqual(create_profile_result_bob.Ok.username, "Alexander")
-    t.ok(create_profile_result_alice.Ok)
+    await s.consistency();
+    t.deepEqual(set_username_result_bob.Ok.username, "bob");
+    t.deepEqual(set_username_result_alice.Ok.username, "aLiCeGiRl");
+    console.log(set_username_result_alice)
+    console.log(set_username_result_bob)
   })
 
-  scenario("validate_create_profile", async (s, t) => {
+  scenario("validate_set_username", async (s, t) => {
     const {alice, bob} = await s.players({alice: conductorConfig, bob: conductorConfig}, true)
-    const create_profile_result_alice = await alice.call("profiles", "profiles", "create_profile", {"username":"alice123"})
-    await s.consistency()
-    // committing the profile entry for the second time for the same agent
-    const invalid_create_profile_result_alice = await alice.call("profiles", "profiles", "create_profile", {"username":"alice1234"})
+    const set_username_result_alice = await setUsername("alice")(alice);
+    await s.consistency();
     // committing a non-unique username
-    const invalid_create_profile_result_bob = await bob.call("profiles", "profiles", "create_profile", {"username":"alice123"})
+    const invalid_set_username_result_bob = await setUsername("alice")(bob);
+    // committing the username entry for the second time for the same agent 
+    const invalid_set_username_result_alice = await setUsername("alice1234")(alice);
     await s.consistency()
-    const create_profile_result_bob = await bob.call("profiles", "profiles", "create_profile", {"username":"alice1234"})
+    const set_username_result_bob = await setUsername("bob")(bob);
     await s.consistency()
-    t.ok(create_profile_result_alice.Ok)
-    t.deepEqual(invalid_create_profile_result_alice.Err, {"Internal":"This agent already has a username"})
-    t.deepEqual(invalid_create_profile_result_bob.Err, {"Internal":"This username is already existing"})
-    t.ok(create_profile_result_bob.Ok)
+    t.ok(set_username_result_alice.Ok)
+    t.deepEqual(invalid_set_username_result_alice.Err, {"Internal":"This agent already has a username"})
+    t.deepEqual(invalid_set_username_result_bob.Err, {"Internal":"This username is already existing"})
+    t.ok(set_username_result_bob.Ok)
   })
 
-  scenario("get_profile", async (s, t) => {
+  scenario("get_usernames", async (s, t) => {
     const {alice, bob} = await s.players({alice: conductorConfig, bob: conductorConfig}, true)
-    const create_profile_result_alice　= await alice.call("profiles", "profiles", "create_profile", {"username":"alice123"})
+    const aliceAddress = alice.instance("profiles").agentAddress;
+    const bobAddress = bob.instance("profiles").agentAddress;
+    const set_username_result_alice　= await setUsername("alice")(alice);
     await s.consistency()
-    const invalid_create_profile_result_alice = await alice.call("profiles", "profiles", "create_profile", {"username":"alice1234"})
-    const invalid_create_profile_result_bob = await bob.call("profiles", "profiles", "create_profile", {"username":"alice123"})
+    const invalid_set_username_result_alice = await setUsername("alice1")(alice);
+    const invalid_set_username_result_bob = await setUsername("alice")(bob);
     await s.consistency()
-    const get_all_agents_result = await alice.call("profiles", "profiles", "get_all_agents", {})
-    const get_my_address_result = await alice.call("profiles", "profiles", "get_my_address", {})
-    const get_username_alice_result = await alice.call("profiles", "profiles", "get_username", {"agent_address": get_my_address_result.Ok})
-    const get_profile_alice_result = await alice.call("profiles", "profiles", "get_profile", {"agent_address": get_my_address_result.Ok})
-    t.deepEqual(get_all_agents_result.Ok.length, 1)
-    t.deepEqual(get_username_alice_result.Ok, "alice123")
-    t.deepEqual(get_profile_alice_result.Ok, {"agent_id":get_my_address_result.Ok, "username": "alice123"})
+    const set_username_result_bob　= await setUsername("bob")(bob);
+    await s.consistency()
+    const get_all_agents_result = await getAllAgents()(alice);
+    const get_username_alice_result = await getUsername(aliceAddress)(alice);
+    t.deepEqual(get_all_agents_result.Ok.length, 2);
+    t.deepEqual(get_username_alice_result.Ok, "alice");
   })
 
   scenario("delete_profile", async (s, t) => {
     const {alice, bob} = await s.players({alice: conductorConfig, bob: conductorConfig}, true)
+    const aliceAddress = alice.instance("profiles").agentAddress;
+    const bobAddress = bob.instance("profiles").agentAddress;
     
-    // create profiles for alice and bob
-    const create_profile_result_alice　= await alice.call("profiles", "profiles", "create_profile", {"username":"AliceInWonderland"})
-    const create_profile_result_bob = await bob.call("profiles", "profiles", "create_profile", {"username": "BobMarley"})
-    await s.consistency()
-    
-    // test if profile creation succeeded
-    // const get_profile_result_alice = await alice.call("profiles", "profiles", "get_my_profile", {})
-    // t.deepEqual(get_profile_result_alice.Ok.length, 1)
+    // create usernames for alice and bob
+    const set_username_result_alice　= await setUsername("alice")(alice);
+    await s.consistency();
 
     // delete alice's profile
-    const delete_profile_result_alice = await alice.call("profiles", "profiles", "delete_profile", {"username": "AliceInWonderland"})
-    s.consistency()
+    const delete_username_result_alice = await deleteUsername("alice")(alice);
+    s.consistency();
 
     // test return value
-    t.deepEqual(delete_profile_result_alice.Ok, true)
-    
-    // test profile deletion
-    const alice_address = await alice.call("profiles", "profiles", "get_my_address", {})
-    
-    const get_profile_result_alice = await alice.call("profiles", "profiles", "get_profile", {"agent_address": alice_address.Ok})
-    t.deepEqual(get_profile_result_alice.Ok, null)
+    t.deepEqual(delete_username_result_alice.Ok, true);
     
     // test username deletion
-    const get_username_result_alice = await alice.call("profiles", "profiles", "get_username", {"agent_address": alice_address.Ok})
-    t.deepEqual(get_username_result_alice.Ok, null)
-
-    // delete a profile that doesn't exist
-    const delete_profile_result_alice_2 = await alice.call("profiles", "profiles", "delete_profile", {"username": "AliceInWonderland"})
-    s.consistency()
-    t.deepEqual(delete_profile_result_alice_2.Err, {"Internal":"There is no profile associated with this agent"})
-
+    const get_username_result_alice = await getUsername(aliceAddress)(alice);
+    t.deepEqual(get_username_result_alice.Ok, null);
   })
-
-  // scenario("list_profiles", async (s, t) => {
-  //   const {alice, bob} = await s.players({alice: conductorConfig, bob: conductorConfig}, true)
-  //   const create_public_profile_result_alice= await alice.call("kizuna_dna", "profile", "create_public_profile", {"input" : {
-  //       "username":"aLiCeGiRl"
-  //   }})
-  //   const create_public_profile_result_bob = await bob.call("kizuna_dna", "profile", "create_public_profile", {"input" : {
-  //       "username":"Alexander"
-  //   }})
-  //   // TATS: we're testing here the list_profiles fucntion
-  //   await s.consistency() 
-  //   const list_result_a = await bob.call("kizuna_dna", "profile", "list_public_profiles", {"username": "Alice"})
-  //   // check for if the array returned has a length of 2
-  //   t.deepEqual(list_result_a.Ok.length, 2)
-  // })
 }

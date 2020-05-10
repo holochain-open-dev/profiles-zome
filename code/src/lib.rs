@@ -2,7 +2,6 @@
 #![allow(dead_code)]
 #![allow(unused_imports)]
 
-use crate::profile::{BooleanReturn, Profile};
 use hdk::{
     entry_definition::ValidatingEntryType, error::ZomeApiResult,
     holochain_persistence_api::cas::content::Address,
@@ -35,11 +34,6 @@ mod profile_zome {
 
     // ENTRY DEFINITIONS
     #[entry_def]
-    fn profile_def() -> ValidatingEntryType {
-        profile::profile_definition()
-    }
-
-    #[entry_def]
     fn username_def() -> ValidatingEntryType {
         profile::username_definition()
     }
@@ -49,13 +43,10 @@ mod profile_zome {
         holochain_anchors::anchor_definition()
     }
 
-    // FRONTEND FUNCTIONS
-
+    // ZOME CALLS
     #[zome_fn("hc_public")]
-    fn create_profile(
-        username: String,
-    ) -> ZomeApiResult<Profile> {
-        profile::handlers::create_profile(username)
+    fn set_username(username: String) -> ZomeApiResult<Username> {
+        profile::handlers::set_username(username)
     }
 
     #[zome_fn("hc_public")]
@@ -74,20 +65,7 @@ mod profile_zome {
     }
 
     #[zome_fn("hc_public")]
-    fn get_profile(agent_address: Address) -> ZomeApiResult<Option<Profile>> {
-        profile::handlers::get_profile(agent_address)
-    }
-
-    /** Temporary Guillem solution **/
-    #[zome_fn("hc_public")]
-    fn set_username(username: String) -> ZomeApiResult<Address> {
-        profile::handlers::set_username(username)?;
-
-        Ok(hdk::AGENT_ADDRESS.clone())
-    }
-
-    #[zome_fn("hc_public")]
-    fn delete_profile(username: String) -> ZomeApiResult<bool> {
-        profile::handlers::delete_profile(username)
+    fn delete_username(username: String) -> ZomeApiResult<bool> {
+        profile::handlers::delete_username(username)
     }
 }
