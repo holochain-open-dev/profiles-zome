@@ -60,7 +60,10 @@ const resolvers = {
         id(parent) {
             return parent.id;
         },
-        username(parent, _, { container }) {
+        username(parent, _, { container, cache }) {
+            const cachedAgent = cache['data'].data[parent.id];
+            if (cachedAgent && cachedAgent.username)
+                return cachedAgent.username;
             const profilesProvider = container.get(ProfilesBindings.ProfilesProvider);
             return profilesProvider.call('get_username', {
                 agent_address: parent.id,
