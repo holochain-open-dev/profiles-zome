@@ -1,6 +1,6 @@
 {
   "name": "holochain-profiles",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "MicroModule that implements minimal profiles on holochain",
   "scripts": {
     "clean": "rimraf dist",
