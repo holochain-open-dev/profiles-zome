@@ -64,11 +64,11 @@ mod profile_zome {
     fn get_my_address() -> ZomeApiResult<Address> {
         Ok(hdk::AGENT_ADDRESS.clone())
     }
-
+/* 
     #[zome_fn("hc_public")]
     fn update_profile(profile: Profile) -> ZomeApiResult<bool> {
         profile::handlers::update_profile(profile)
-    }
+    } */
 
     #[zome_fn("hc_public")]
     fn delete_my_username() -> ZomeApiResult<bool> {
