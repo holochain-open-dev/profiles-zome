@@ -10,13 +10,22 @@ const libraryName = 'hc-profiles';
 export default {
   input: `src/${libraryName}.ts`,
   output: [
-    { file: pkg.main, name: camelCase(libraryName), format: 'umd', sourcemap: true },
-    { file: pkg.module, format: 'es', sourcemap: true }
+    {
+      file: pkg.main,
+      name: camelCase(libraryName),
+      format: 'umd',
+      sourcemap: true,
+    },
+    { file: pkg.module, format: 'es', sourcemap: true },
   ],
   // Indicate here external modules you don't wanna include in your bundle (i.e.: 'lodash')
-  external: [...Object.keys(pkg.dependencies || {}), ...Object.keys(pkg.peerDependencies || {})],
+  external: [
+    ...Object.keys(pkg.dependencies || {}),
+    ...Object.keys(pkg.peerDependencies || {}),
+    'lit-html/directives/class-map',
+  ],
   watch: {
-    include: 'src/**'
+    include: 'src/**',
   },
   plugins: [
     // Allow json resolution
@@ -24,11 +33,11 @@ export default {
     // Compile TypeScript files
     typescript({
       useTsconfigDeclarationDir: true,
-      cacheRoot: `${require('temp-dir')}/.rpt2_cache`
+      cacheRoot: `${require('temp-dir')}/.rpt2_cache`,
     }),
 
     // Resolve source maps to the original source
-    sourceMaps()
+    sourceMaps(),
   ],
-  preserveSymlinks: true
+  preserveSymlinks: true,
 };

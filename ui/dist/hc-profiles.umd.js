@@ -1,8 +1,8 @@
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@uprtcl/holochain-provider'), require('@uprtcl/micro-orchestrator'), require('lit-element'), require('@uprtcl/graphql'), require('@material/mwc-textfield'), require('@material/mwc-button'), require('graphql-tag')) :
-  typeof define === 'function' && define.amd ? define(['exports', '@uprtcl/holochain-provider', '@uprtcl/micro-orchestrator', 'lit-element', '@uprtcl/graphql', '@material/mwc-textfield', '@material/mwc-button', 'graphql-tag'], factory) :
-  (factory((global.hcProfiles = {}),global.holochainProvider,global.microOrchestrator,global.litElement,global.graphql,global.mwcTextfield,null,global.gql));
-}(this, (function (exports,holochainProvider,microOrchestrator,litElement,graphql,mwcTextfield,mwcButton,gql) { 'use strict';
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@uprtcl/holochain-provider'), require('@uprtcl/micro-orchestrator'), require('lit-element'), require('lit-html/directives/class-map'), require('@uprtcl/graphql'), require('@material/mwc-textfield'), require('@material/mwc-button'), require('graphql-tag')) :
+  typeof define === 'function' && define.amd ? define(['exports', '@uprtcl/holochain-provider', '@uprtcl/micro-orchestrator', 'lit-element', 'lit-html/directives/class-map', '@uprtcl/graphql', '@material/mwc-textfield', '@material/mwc-button', 'graphql-tag'], factory) :
+  (factory((global.hcProfiles = {}),global.holochainProvider,global.microOrchestrator,global.litElement,global.classMap,global.graphql,global.mwcTextfield,null,global.gql));
+}(this, (function (exports,holochainProvider,microOrchestrator,litElement,classMap,graphql,mwcTextfield,mwcButton,gql) { 'use strict';
 
   gql = gql && gql.hasOwnProperty('default') ? gql['default'] : gql;
 
@@ -160,6 +160,12 @@
         display: flex;
         flex-direction: column;
       }
+      .small-margin {
+        margin-top: 6px;
+      }
+      .big-margin {
+        margin-top: 23px;
+      }
     `;
       }
       async setUsername() {
@@ -187,9 +193,15 @@
       <div class="column">
         <mwc-textfield
           id="username-field"
+          outlined
           @input=${() => this.usernameField.reportValidity()}
         ></mwc-textfield>
         <mwc-button
+          raised
+          class=${classMap.classMap({
+            'small-margin': !!this.usernameField,
+            'big-margin': !this.usernameField,
+        })}
           .disabled=${!this.usernameField || !this.usernameField.validity.valid}
           label="SET USERNAME"
           @click=${() => this.setUsername()}

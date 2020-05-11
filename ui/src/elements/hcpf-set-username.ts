@@ -1,5 +1,6 @@
 import { moduleConnect } from '@uprtcl/micro-orchestrator';
 import { LitElement, css, html, query, property } from 'lit-element';
+import { classMap } from 'lit-html/directives/class-map';
 import { ApolloClient } from 'apollo-boost';
 import { ApolloClientModule } from '@uprtcl/graphql';
 
@@ -51,6 +52,12 @@ export class SetUsername extends moduleConnect(LitElement) {
         display: flex;
         flex-direction: column;
       }
+      .small-margin {
+        margin-top: 6px;
+      }
+      .big-margin {
+        margin-top: 23px;
+      }
     `;
   }
 
@@ -82,9 +89,15 @@ export class SetUsername extends moduleConnect(LitElement) {
       <div class="column">
         <mwc-textfield
           id="username-field"
+          outlined
           @input=${() => this.usernameField.reportValidity()}
         ></mwc-textfield>
         <mwc-button
+          raised
+          class=${classMap({
+            'small-margin': !!this.usernameField,
+            'big-margin': !this.usernameField,
+          })}
           .disabled=${!this.usernameField || !this.usernameField.validity.valid}
           label="SET USERNAME"
           @click=${() => this.setUsername()}
