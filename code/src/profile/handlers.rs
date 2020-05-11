@@ -113,6 +113,44 @@ pub fn set_username(username: String) -> ZomeApiResult<Username> {
     }
 }
 
+
+pub fn update_profile(profile: Profile) -> ZomeApiResult<bool> {
+    let username_entry_address = hdk::get_links(
+        &AGENT_ADDRESS,
+        LinkMatch::Exactly(AGENT_USERNAME_LINK_TYPE),
+        LinkMatch::Exactly("username"),
+    )?;
+    let profile_entry_address = hdk::get_links(
+        &AGENT_ADDRESS,
+        LinkMatch::Exactly(AGENT_PROFILE_LINK_TYPE),
+        LinkMatch::Exactly("profile")
+    )?;
+
+    let new_username = Username::new(profile.username.clone());
+    let username_entry = new_username.entry();
+
+    if let Ok(None) = hdk::get_entry(&username_entry.address()) {
+        let username_address = username_entry_address.addresses()[0].clone();
+        let profile_address = profile_entry_address.addresses()[0].clone();
+
+        let mut curr_profile: Profile = hdk::utils::get_as_type(profile_address)?;
+        let mut username: Username = hdk::utils::get_as_type(username_address)?;
+
+        username.username = profile.username.clone();
+        curr_profile.username = profile.username.clone();
+
+        hdk::update_entry(curr_profile.entry(), &profile_entry_address.addresses()[0])?;    
+        hdk::update_entry(username.entry(), &username_entry_address.addresses()[0])?;
+
+        Ok(true)
+    } else {    
+        return Err(ZomeApiError::from(String::from(
+            "This username is already existing",
+        )))
+    }
+}
+
+
 pub fn get_all_agents() -> ZomeApiResult<Vec<Username>> {
     let username_anchor = holochain_anchors::anchor(USERNAME_ANCHOR_TYPE.into(), USERNAMES_ANCHOR_TEXT.into())?;
 

@@ -66,6 +66,11 @@ mod profile_zome {
     }
 
     #[zome_fn("hc_public")]
+    fn update_profile(profile: Profile) -> ZomeApiResult<bool> {
+        profile::handlers::update_profile(profile)
+    }
+
+    #[zome_fn("hc_public")]
     fn delete_my_username() -> ZomeApiResult<bool> {
         profile::handlers::delete_my_username()
     }
