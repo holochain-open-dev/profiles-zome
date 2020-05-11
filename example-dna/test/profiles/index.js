@@ -66,28 +66,30 @@ module.exports = (scenario, conductorConfig) => {
     const get_username_alice_result = await getUsername(aliceAddress)(alice);
     t.deepEqual(get_all_agents_result.Ok.length, 2);
     t.deepEqual(get_username_alice_result.Ok, "alice");
+    console.log("HAHAHA");
+    console.log(get_all_agents_result);
   })
 
-  scenario("delete_username", async (s, t) => {
-    const {alice, bob} = await s.players({alice: conductorConfig, bob: conductorConfig}, true);
-    const aliceAddress = alice.instance("profiles").agentAddress;
+  // scenario("delete_username", async (s, t) => {
+  //   const {alice, bob} = await s.players({alice: conductorConfig, bob: conductorConfig}, true);
+  //   const aliceAddress = alice.instance("profiles").agentAddress;
     
-    // create usernames for alice
-    const set_username_result_alice　= await setUsername("alice")(alice);
-    await s.consistency();
+  //   // create usernames for alice
+  //   const set_username_result_alice　= await setUsername("alice")(alice);
+  //   await s.consistency();
 
-    // check that the username was created successfully
-    t.deepEqual(set_username_result_alice.Ok.username, "alice");
+  //   // check that the username was created successfully
+  //   t.deepEqual(set_username_result_alice.Ok.username, "alice");
 
-    // delete alice's profile
-    const delete_username_result_alice = await deleteUsername("alice")(alice);
-    s.consistency();
+  //   // delete alice's profile
+  //   const delete_username_result_alice = await deleteUsername("alice")(alice);
+  //   s.consistency();
 
-    // test return value
-    t.deepEqual(delete_username_result_alice.Ok, true);
+  //   // test return value
+  //   t.deepEqual(delete_username_result_alice.Ok, true);
     
-    // test username deletion
-    const get_username_result_alice = await getUsername(aliceAddress)(alice);
-    t.deepEqual(get_username_result_alice.Ok, null);
-  })
+  //   // test username deletion
+  //   const get_username_result_alice = await getUsername(aliceAddress)(alice);
+  //   t.deepEqual(get_username_result_alice.Ok, null);
+  // })
 }

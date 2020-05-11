@@ -20,7 +20,6 @@ use holochain_entry_utils::HolochainEntry;
 #[derive(Serialize, Deserialize, Debug, DefaultJson, Clone)]
 #[serde(rename_all = "snake_case")]
 pub struct Username {
-    pub agent_id: Option<Address>,
     pub username: String,
 }
 #[derive(Serialize, Deserialize, Debug, DefaultJson, Clone)]
@@ -37,9 +36,8 @@ impl HolochainEntry for Username {
 }
 
 impl Username {
-    pub fn new(agent_address: Option<Address>, username: String) -> Self {
+    pub fn new(username: String) -> Self {
         Username {
-            agent_id: agent_address,
             username,
         }
     }
