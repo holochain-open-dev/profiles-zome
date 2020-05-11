@@ -177,7 +177,7 @@ pub fn get_username(agent_address: Address) -> ZomeApiResult<Option<String>> {
     }
 }
 
-pub fn delete_username(username: String) -> ZomeApiResult<bool> {
+pub fn delete_my_username() -> ZomeApiResult<bool> {
     let links_result = hdk::get_links(
         &AGENT_ADDRESS,
         LinkMatch::Exactly(AGENT_USERNAME_LINK_TYPE),
@@ -187,6 +187,7 @@ pub fn delete_username(username: String) -> ZomeApiResult<bool> {
     if let 1 = links_result.links().len() {
 
         let username_entry_address = &links_result.addresses()[0];
+        let username_entry: Username = hdk::utils::get_as_type(username_entry_address.clone())?; 
 
         hdk::remove_link(
             &AGENT_ADDRESS,                            
@@ -200,18 +201,18 @@ pub fn delete_username(username: String) -> ZomeApiResult<bool> {
             &username_anchor,  
             &username_entry_address,                                       
             USERNAME_LINK_TYPE,                         
-            &username.to_ascii_lowercase()                      
+            &username_entry.username.to_ascii_lowercase()                      
         )?;
 
-        let username_initials_anchor = anchor_username_initials(USERNAME_ANCHOR_TYPE.into(), USERNAMES_ANCHOR_TEXT.into(), username.clone())?;
+        let username_initials_anchor = anchor_username_initials(USERNAME_ANCHOR_TYPE.into(), USERNAMES_ANCHOR_TEXT.into(), username_entry.username.clone())?;
         hdk::remove_link(
             &username_initials_anchor,  
             &username_entry_address,                                       
             USERNAME_LINK_TYPE,                         
-            &username.to_ascii_lowercase()                      
+            &username_entry.username.to_ascii_lowercase()                      
         )?;
 
-        let _deleted_username_address = hdk::remove_entry(&username_entry_address)?;
+        hdk::remove_entry(&username_entry_address)?;
 
         Ok(true)
     } else {

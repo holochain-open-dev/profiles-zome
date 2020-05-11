@@ -18,6 +18,7 @@ use profile::Username;
 // profile __________ mod
 //            |______ handlers
 //            |______ strings
+//            |______ validation
 
 #[zome]
 mod profile_zome {
@@ -65,7 +66,7 @@ mod profile_zome {
     }
 
     #[zome_fn("hc_public")]
-    fn delete_username(username: String) -> ZomeApiResult<bool> {
-        profile::handlers::delete_username(username)
+    fn delete_my_username() -> ZomeApiResult<bool> {
+        profile::handlers::delete_my_username()
     }
 }

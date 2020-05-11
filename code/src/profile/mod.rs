@@ -10,6 +10,8 @@ use hdk::{
 
 pub mod handlers;
 pub mod strings;
+pub mod validation;
+use validation::*;
 use strings::*;
 use holochain_entry_utils::HolochainEntry;
 // MAIN MODULE UNDER THE PROFILE CRATE
@@ -53,8 +55,16 @@ pub fn username_definition() -> ValidatingEntryType {
         validation_package: || {
             hdk::ValidationPackageDefinition::Entry
         },
-        validation: | _validation_data: hdk::EntryValidationData<Username>| {
-            Ok(())
+        validation: | validation_data: hdk::EntryValidationData<Username>| {
+            match validation_data
+            {
+                hdk::EntryValidationData::Delete{old_entry, old_entry_header, validation_data} =>
+                {
+                   validation::validate_delete_username(old_entry, old_entry_header, validation_data)
+                },
+                // need validation for update
+                _ => Ok(()),
+            }
         },
         links: [
             from!(

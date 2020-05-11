@@ -17,7 +17,7 @@ function getAllAgents() {
 }
 
 function deleteUsername(username) {
-  return (caller) => caller.call("profiles", "profiles", "delete_username", {"username":username})
+  return (caller) => caller.call("profiles", "profiles", "delete_my_username", {"username":username})
 }
 module.exports = (scenario, conductorConfig) => {
     // Register a scenario, which is a function that gets a special API injected in
@@ -35,7 +35,7 @@ module.exports = (scenario, conductorConfig) => {
   })
 
   scenario("validate_set_username", async (s, t) => {
-    const {alice, bob} = await s.players({alice: conductorConfig, bob: conductorConfig}, true)
+    const {alice, bob} = await s.players({alice: conductorConfig, bob: conductorConfig}, true);
     const set_username_result_alice = await setUsername("alice")(alice);
     await s.consistency();
     // committing a non-unique username
@@ -52,7 +52,7 @@ module.exports = (scenario, conductorConfig) => {
   })
 
   scenario("get_usernames", async (s, t) => {
-    const {alice, bob} = await s.players({alice: conductorConfig, bob: conductorConfig}, true)
+    const {alice, bob} = await s.players({alice: conductorConfig, bob: conductorConfig}, true);
     const aliceAddress = alice.instance("profiles").agentAddress;
     const bobAddress = bob.instance("profiles").agentAddress;
     const set_username_result_alice　= await setUsername("alice")(alice);
@@ -68,12 +68,11 @@ module.exports = (scenario, conductorConfig) => {
     t.deepEqual(get_username_alice_result.Ok, "alice");
   })
 
-  scenario("delete_profile", async (s, t) => {
-    const {alice, bob} = await s.players({alice: conductorConfig, bob: conductorConfig}, true)
+  scenario("delete_username", async (s, t) => {
+    const {alice, bob} = await s.players({alice: conductorConfig, bob: conductorConfig}, true);
     const aliceAddress = alice.instance("profiles").agentAddress;
-    const bobAddress = bob.instance("profiles").agentAddress;
     
-    // create usernames for alice and bob
+    // create usernames for alice
     const set_username_result_alice　= await setUsername("alice")(alice);
     await s.consistency();
 
