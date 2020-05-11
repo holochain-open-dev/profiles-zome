@@ -112,7 +112,7 @@ pub fn set_username(username: String) -> ZomeApiResult<Username> {
         )))
     }
 }
-
+/* 
 
 pub fn update_profile(profile: Profile) -> ZomeApiResult<bool> {
     let username_entry_address = hdk::get_links(
@@ -149,7 +149,7 @@ pub fn update_profile(profile: Profile) -> ZomeApiResult<bool> {
         )))
     }
 }
-
+ */
 
 pub fn get_all_agents() -> ZomeApiResult<Vec<Username>> {
     let username_anchor = holochain_anchors::anchor(USERNAME_ANCHOR_TYPE.into(), USERNAMES_ANCHOR_TEXT.into())?;
