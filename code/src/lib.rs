@@ -9,8 +9,10 @@ use hdk::{
 use hdk_proc_macros::zome;
 use serde_derive::{Deserialize, Serialize};
 pub mod profile;
-use profile::Username;
-use std::collections::HashMap;
+use profile::{
+    Username,
+    Profile,
+};
 
 // MAIN FILE FOR THE PROFILE ZOME
 // contains calls to entry definitions and functions.
@@ -47,12 +49,12 @@ mod profile_zome {
 
     // ZOME CALLS
     #[zome_fn("hc_public")]
-    fn set_username(username: String) -> ZomeApiResult<HashMap<String, String>> {
+    fn set_username(username: String) -> ZomeApiResult<Profile> {
         profile::handlers::set_username(username)
     }
 
     #[zome_fn("hc_public")]
-    fn get_all_agents() -> ZomeApiResult<Vec<HashMap<String, String>>> {
+    fn get_all_agents() -> ZomeApiResult<Vec<Profile>> {
         profile::handlers::get_all_agents()
     }
 

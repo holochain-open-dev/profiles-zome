@@ -30,8 +30,6 @@ module.exports = (scenario, conductorConfig) => {
     await s.consistency();
     t.deepEqual(set_username_result_bob.Ok.username, "bob");
     t.deepEqual(set_username_result_alice.Ok.username, "aLiCeGiRl");
-    console.log(set_username_result_alice)
-    console.log(set_username_result_bob)
   })
 
   scenario("validate_set_username", async (s, t) => {
@@ -64,10 +62,10 @@ module.exports = (scenario, conductorConfig) => {
     await s.consistency()
     const get_all_agents_result = await getAllAgents()(alice);
     const get_username_alice_result = await getUsername(aliceAddress)(alice);
+    t.ok(set_username_result_alice.Ok);
+    t.ok(set_username_result_bob.Ok);
     t.deepEqual(get_all_agents_result.Ok.length, 2);
     t.deepEqual(get_username_alice_result.Ok, "alice");
-    console.log("HAHAHA");
-    console.log(get_all_agents_result);
   })
 
   // scenario("delete_username", async (s, t) => {

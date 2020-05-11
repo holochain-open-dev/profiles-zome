@@ -9,10 +9,10 @@ use hdk::{
 use holochain_anchors::anchor;
 use crate::profile::{
     Username,
+    Profile
 };
 use crate::profile::strings::*;
 use holochain_entry_utils::HolochainEntry;
-use std::collections::HashMap;
 
 
 // HANDLER MODULE UNDER THE PROFILE CRATE
@@ -54,7 +54,7 @@ fn anchor_username_initials(username: String) -> ZomeApiResult<Address> {
 //     Ok(())
 // }
 
-pub fn set_username(username: String) -> ZomeApiResult<HashMap<String, String>> {
+pub fn set_username(username: String) -> ZomeApiResult<Profile> {
     let new_username: Username = Username::new(username.clone());
     let username_entry = new_username.entry();
     let username_address = username_entry.address();
@@ -72,13 +72,6 @@ pub fn set_username(username: String) -> ZomeApiResult<HashMap<String, String>> 
         // If none then commit the username
         // If username exist, throw an error
         if let Ok(None) = hdk::get_entry(&username_address) {
-            if let Ok(username) = hdk::get_entry(&username_address) {
-                if(username.username == username) {
-                    Err 
-                } else {
-                    hdk::commit_entry("tats")
-                }
-            }
 
             hdk::commit_entry(&username_entry.clone())?;
 
@@ -107,10 +100,8 @@ pub fn set_username(username: String) -> ZomeApiResult<HashMap<String, String>> 
                 USERNAME_LINK_TYPE,                         
                 &username.to_ascii_lowercase()                      
             )?;
-            let username_map = HashMap::new();
-            username_map.insert("agent_id".to_string(), String::from(AGENT_ADDRESS));
-            username_map.insert("username".to_string(), String::from(username));
-            Ok(username_map)
+            let profile = Profile::new(AGENT_ADDRESS.to_string().into(), username);
+            Ok(profile)
         } else {
             return Err(ZomeApiError::from(String::from(
                 "This username is already existing",
@@ -123,10 +114,10 @@ pub fn set_username(username: String) -> ZomeApiResult<HashMap<String, String>> 
     }
 }
 
-pub fn get_all_agents() -> ZomeApiResult<Vec<HashMap<String, String>>> {
+pub fn get_all_agents() -> ZomeApiResult<Vec<Profile>> {
     let username_anchor = holochain_anchors::anchor(USERNAME_ANCHOR_TYPE.into(), USERNAMES_ANCHOR_TEXT.into())?;
 
-    let usernames_with_address: Vec<Map<String, Value>> = hdk::api::get_links(
+    let usernames_with_address = hdk::api::get_links(
         &username_anchor,
         LinkMatch::Exactly(USERNAME_LINK_TYPE),
         LinkMatch::Any,
@@ -147,10 +138,8 @@ pub fn get_all_agents() -> ZomeApiResult<Vec<HashMap<String, String>>> {
                         if let GetEntryResultType::Single(entry_result_item) = u.result {
                             let agent_address = entry_result_item.headers[0].provenances()[0].source();
                             if let Some(username) = Username::from_entry(&entry) {
-                                let mut username_map = HashMap::new();
-                                username_map.insert("agent_id".to_string(), String::from(agent_address));
-                                username_map.insert("username".to_string(), String::from(username.username));
-                                return Some(username_map)
+                                let profile = Profile::new(agent_address.into(), username.username);
+                                return Some(profile)
                             } else {
                                 return None
                             }

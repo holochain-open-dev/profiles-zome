@@ -2,7 +2,7 @@
 /// See the tryorama README [https://github.com/holochain/tryorama]
 /// for a potentially more accurate example
 
-//  for less verbose test output. use TRYORAMA_LOG_LEVEL=error hc test -s
+//  for less verbose test output. use TRYORAMA_LOG_LEVEL=error hc test
 
 const path = require("path");
 

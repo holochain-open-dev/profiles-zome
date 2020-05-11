@@ -16,16 +16,17 @@ use strings::*;
 use holochain_entry_utils::HolochainEntry;
 // MAIN MODULE UNDER THE PROFILE CRATE
 // contains data structure definitions and implementations, and entry definitions
+#[derive(Serialize, Deserialize, Debug, DefaultJson, Clone)]
+#[serde(rename_all = "snake_case")]
+pub struct Profile {
+    pub agent_id: Address,
+    pub username: String,
+}
 
 #[derive(Serialize, Deserialize, Debug, DefaultJson, Clone)]
 #[serde(rename_all = "snake_case")]
 pub struct Username {
     pub username: String,
-}
-#[derive(Serialize, Deserialize, Debug, DefaultJson, Clone)]
-#[serde(rename_all = "snake_case")]
-pub struct BooleanReturn {
-    pub value: bool,
 }
 
 // IMPLEMENTATIONS
@@ -38,6 +39,15 @@ impl HolochainEntry for Username {
 impl Username {
     pub fn new(username: String) -> Self {
         Username {
+            username,
+        }
+    }
+}
+
+impl Profile {
+    pub fn new(agent_address: Address, username: String) -> Self {
+        Profile {
+            agent_id: agent_address,
             username,
         }
     }
