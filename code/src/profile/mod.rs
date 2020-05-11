@@ -41,7 +41,6 @@ impl Username {
         Username {
             agent_id: agent_address,
             username,
-            agent_address
         }
     }
 }
