@@ -40,8 +40,7 @@ impl Username {
     pub fn new(agent_address: Option<Address>, username: String) -> Self {
         Username {
             agent_id: agent_address,
-            username,
-            agent_address
+            username
         }
     }
 }
