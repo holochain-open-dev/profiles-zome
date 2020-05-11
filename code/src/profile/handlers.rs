@@ -21,11 +21,10 @@ use holochain_entry_utils::HolochainEntry;
 // anchor format: 
 //      anchor type: 'USERNAME_ANCHOR'
 //      anchor text: 'USERNAMES_<first character of username>'
-fn anchor_username_initials(anchor_type: String, anchor_text: String, username: String) -> ZomeApiResult<Address> {
+fn anchor_username_initials(username: String) -> ZomeApiResult<Address> {
     let first_letter = username.chars().next().unwrap().to_ascii_lowercase();
-    let type_string = format!("{}{}{}", anchor_type, "_", first_letter);
-    let text_string = format!("{}{}{}", anchor_text, "_", first_letter);
-    anchor(type_string.to_string(), text_string.to_string())
+    let text_string = format!("{}{}{}", USERNAMES_ANCHOR_TEXT, "_", first_letter);
+    anchor(USERNAME_ANCHOR_TYPE.to_string(), text_string.to_string())
 }
 
 /** Temporary Guillem solution **/
@@ -93,7 +92,7 @@ pub fn set_username(username: String) -> ZomeApiResult<Username> {
             )?;
 
             // links username to specific anchor USERNAME_ANCHOR_<FIRST_CHARACTER>
-            let username_initials_anchor = anchor_username_initials(USERNAME_ANCHOR_TYPE.into(), USERNAMES_ANCHOR_TEXT.into(), username.clone())?;
+            let username_initials_anchor = anchor_username_initials(username.clone())?;
             hdk::link_entries(
                 &username_initials_anchor,  
                 &username_address,                                       
@@ -204,7 +203,7 @@ pub fn delete_my_username() -> ZomeApiResult<bool> {
             &username_entry.username.to_ascii_lowercase()                      
         )?;
 
-        let username_initials_anchor = anchor_username_initials(USERNAME_ANCHOR_TYPE.into(), USERNAMES_ANCHOR_TEXT.into(), username_entry.username.clone())?;
+        let username_initials_anchor = anchor_username_initials(username_entry.username.clone())?;
         hdk::remove_link(
             &username_initials_anchor,  
             &username_entry_address,                                       

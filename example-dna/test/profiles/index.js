@@ -76,6 +76,9 @@ module.exports = (scenario, conductorConfig) => {
     const set_username_result_alice　= await setUsername("alice")(alice);
     await s.consistency();
 
+    // check that the username was created successfully
+    t.deepEqual(set_username_result_alice.Ok.username, "alice");
+
     // delete alice's profile
     const delete_username_result_alice = await deleteUsername("alice")(alice);
     s.consistency();
