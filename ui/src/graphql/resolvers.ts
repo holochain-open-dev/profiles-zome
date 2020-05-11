@@ -54,9 +54,9 @@ export const resolvers = {
         ProfilesBindings.ProfilesProvider
       );
 
-      const agentId = await profilesProvider.call('set_username', { username });
+      const agent = await profilesProvider.call('set_username', { username });
       return {
-        id: agentId,
+        id: agent.agent_id,
         username,
       };
     },

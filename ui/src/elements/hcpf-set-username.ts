@@ -14,6 +14,8 @@ export class SetUsername extends moduleConnect(LitElement) {
   @property({ type: Number })
   usernameMinLength: number = 3;
 
+  existingUsernames = {};
+
   client!: ApolloClient<any>;
 
   firstUpdated() {
@@ -28,6 +30,9 @@ export class SetUsername extends moduleConnect(LitElement) {
         return {
           valid: false,
         };
+      } else if (this.existingUsernames[newValue]) {
+        this.usernameField.setCustomValidity('This username already exists');
+        return { valid: false };
       }
 
       return {
@@ -51,20 +56,25 @@ export class SetUsername extends moduleConnect(LitElement) {
 
   async setUsername() {
     const username = this.usernameField.value;
-    await this.client.mutate({
-      mutation: SET_USERNAME,
-      variables: {
-        username,
-      },
-    });
+    try {
+      await this.client.mutate({
+        mutation: SET_USERNAME,
+        variables: {
+          username,
+        },
+      });
 
-    this.dispatchEvent(
-      new CustomEvent('username-set', {
-        detail: { username },
-        bubbles: true,
-        composed: true,
-      })
-    );
+      this.dispatchEvent(
+        new CustomEvent('username-set', {
+          detail: { username },
+          bubbles: true,
+          composed: true,
+        })
+      );
+    } catch (e) {
+      this.existingUsernames[username] = true;
+      this.usernameField.reportValidity();
+    }
   }
 
   render() {

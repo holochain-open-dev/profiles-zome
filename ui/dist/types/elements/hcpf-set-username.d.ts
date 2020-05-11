@@ -9,6 +9,7 @@ declare const SetUsername_base: {
 export declare class SetUsername extends SetUsername_base {
     usernameField: TextField;
     usernameMinLength: number;
+    existingUsernames: {};
     client: ApolloClient<any>;
     firstUpdated(): void;
     static get styles(): import("lit-element").CSSResult;

@@ -73,9 +73,9 @@ const resolvers = {
     Mutation: {
         async setUsername(_, { username }, { container }) {
             const profilesProvider = container.get(ProfilesBindings.ProfilesProvider);
-            const agentId = await profilesProvider.call('set_username', { username });
+            const agent = await profilesProvider.call('set_username', { username });
             return {
-                id: agentId,
+                id: agent.agent_id,
                 username,
             };
         },
@@ -129,6 +129,7 @@ class SetUsername extends moduleConnect(LitElement) {
     constructor() {
         super(...arguments);
         this.usernameMinLength = 3;
+        this.existingUsernames = {};
     }
     firstUpdated() {
         this.client = this.request(ApolloClientModule.bindings.Client);
@@ -139,6 +140,10 @@ class SetUsername extends moduleConnect(LitElement) {
                 return {
                     valid: false,
                 };
+            }
+            else if (this.existingUsernames[newValue]) {
+                this.usernameField.setCustomValidity('This username already exists');
+                return { valid: false };
             }
             return {
                 valid: true,
@@ -159,17 +164,23 @@ class SetUsername extends moduleConnect(LitElement) {
     }
     async setUsername() {
         const username = this.usernameField.value;
-        await this.client.mutate({
-            mutation: SET_USERNAME,
-            variables: {
-                username,
-            },
-        });
-        this.dispatchEvent(new CustomEvent('username-set', {
-            detail: { username },
-            bubbles: true,
-            composed: true,
-        }));
+        try {
+            await this.client.mutate({
+                mutation: SET_USERNAME,
+                variables: {
+                    username,
+                },
+            });
+            this.dispatchEvent(new CustomEvent('username-set', {
+                detail: { username },
+                bubbles: true,
+                composed: true,
+            }));
+        }
+        catch (e) {
+            this.existingUsernames[username] = true;
+            this.usernameField.reportValidity();
+        }
     }
     render() {
         return html `
