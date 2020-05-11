@@ -9,11 +9,17 @@ export declare const resolvers: {
             id: any;
         }>;
     };
+    Me: {
+        agent(parent: any): {
+            id: any;
+        };
+    };
     Agent: {
         id(parent: any): any;
-        username(parent: any, _: any, { container }: {
+        username(parent: any, _: any, { container, cache }: {
             container: any;
-        }): Promise<any>;
+            cache: any;
+        }): any;
     };
     Mutation: {
         setUsername(_: any, { username }: {

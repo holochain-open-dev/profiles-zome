@@ -1,6 +1,8 @@
 import { HolochainProvider } from '@uprtcl/holochain-provider';
 
 import { ProfilesBindings } from '../bindings';
+import { ApolloClientModule } from '@uprtcl/graphql';
+import { ApolloClient, gql } from 'apollo-boost';
 
 export const resolvers = {
   Query: {
@@ -24,11 +26,19 @@ export const resolvers = {
       return { id: address };
     },
   },
+  Me: {
+    agent(parent) {
+      return { id: parent.id };
+    },
+  },
   Agent: {
     id(parent) {
       return parent.id;
     },
-    username(parent, _, { container }) {
+    username(parent, _, { container, cache }) {
+      const cachedAgent = cache['data'].data[parent.id];
+      if (cachedAgent && cachedAgent.username) return cachedAgent.username;
+
       const profilesProvider: HolochainProvider = container.get(
         ProfilesBindings.ProfilesProvider
       );
