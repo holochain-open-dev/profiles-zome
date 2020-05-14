@@ -20,13 +20,10 @@ function deleteUsername(username) {
   return (caller) => caller.call("profiles", "profiles", "delete_my_username", {"username":username})
 }
 module.exports = (scenario, conductorConfig) => {
-    // Register a scenario, which is a function that gets a special API injected in
-    // TATS: this first line is just a boiler plate then sa string you can just specify what scenario you are creating 
   scenario("set_username", async (s, t) => {
     const {alice, bob} = await s.players({alice: conductorConfig, bob: conductorConfig}, true);
     const set_username_result_alice　= await setUsername("aLiCeGiRl")(alice);
     const set_username_result_bob = await setUsername("bob")(bob);
-    // TATS: check if all calls above returns Ok from rust
     await s.consistency();
     t.deepEqual(set_username_result_bob.Ok.username, "bob");
     t.deepEqual(set_username_result_alice.Ok.username, "aLiCeGiRl");
