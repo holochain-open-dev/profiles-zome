@@ -201,16 +201,13 @@ pub fn get_username(agent_address: Address) -> ZomeApiResult<Option<String>> {
 
     match links_result.links().len() {
         0 => Ok(None),
-        1 => {
+        _ => {
             let username_address = links_result.addresses()[0].clone();
 
             let username: Username = hdk::utils::get_as_type(username_address)?;
 
             Ok(Some(username.username))
         }
-        _ => Err(ZomeApiError::from(String::from(
-            "Agent has more than one username registered",
-        ))),
     }
 }
 
