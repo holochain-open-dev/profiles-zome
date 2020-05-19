@@ -61,6 +61,8 @@
               return parent.id;
           },
           username(parent, _, { container, cache }) {
+              if (parent.username)
+                  return parent.username;
               const cachedAgent = cache['data'].data[parent.id];
               if (cachedAgent && cachedAgent.username)
                   return cachedAgent.username;
