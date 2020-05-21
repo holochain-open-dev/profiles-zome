@@ -68,6 +68,11 @@ mod profile_zome {
         Ok(hdk::AGENT_ADDRESS.clone())
     }
 
+    #[zome_fn("hc_public")]
+    fn get_address_from_username(username: String) -> Address {
+        profile::handlers::get_address_from_username(username)
+    }
+
     // #[zome_fn("hc_public")]
     // fn update_profile(profile: Profile) -> ZomeApiResult<bool> {
     //     profile::handlers::update_profile(profile)
