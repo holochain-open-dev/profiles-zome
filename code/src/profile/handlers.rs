@@ -5,6 +5,7 @@ use hdk::{
     prelude::*,
     api::AGENT_ADDRESS,
     holochain_core_types::time::Timeout,
+    holochain_persistence_api::hash::HashString,
 };
 use holochain_anchors::anchor;
 use crate::profile::{
