@@ -257,16 +257,16 @@ pub fn get_username(agent_address: Address) -> ZomeApiResult<Option<String>> {
 //     }
 // }
 
-pub fn get_address_from_username(username: String) -> Address {
+pub fn get_address_from_username(username: String) -> ZomeApiResult<Address> {
     
-    let username_initials_anchor = anchor_username_initials(username.clone()).unwrap();
+    let username_initials_anchor = anchor_username_initials(username.clone())?;
 
     // Might panic when username does not exist
     let username_entry_address = hdk::get_links(
         &username_initials_anchor,
         LinkMatch::Exactly(USERNAME_LINK_TYPE),
         LinkMatch::Exactly(&username)
-    ).unwrap().addresses()[0].clone();
+    )?.addresses()[0].clone();
     
     // Might panic when no address is found
     let username_entry_result = hdk::api::get_entry_result(
@@ -283,15 +283,23 @@ pub fn get_address_from_username(username: String) -> Address {
             if let Some(_entry) = u.clone().latest() {
                 if let GetEntryResultType::Single(entry_result_item) = u.result {
                     let agent_address = entry_result_item.headers[0].provenances()[0].source();
-                    agent_address
+                    // agent_address
+                    Ok(agent_address)
+                    // Ok(json!({"address": agent_address}))
                 } else {
-                    HashString::from("Error".to_string())
+                    return Err(ZomeApiError::from(String::from(
+                        "This username is already existing",
+                    )))
                 }
             } else {
-                HashString::from("Error".to_string())
+                return Err(ZomeApiError::from(String::from(
+                    "This username is already existing",
+                )))
             }
         }, 
-        _ => HashString::from("Error".to_string())
+        _ => return Err(ZomeApiError::from(String::from(
+                        "This username is already existing",
+                    )))
  
     }
 }
