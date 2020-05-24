@@ -69,7 +69,7 @@ mod profile_zome {
     }
 
     #[zome_fn("hc_public")]
-    fn get_address_from_username(username: String) -> Address {
+    fn get_address_from_username(username: String) -> ZomeApiResult<Address> {
         profile::handlers::get_address_from_username(username)
     }
 

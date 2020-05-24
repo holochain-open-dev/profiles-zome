@@ -135,21 +135,31 @@ pub fn get_all_agents() -> ZomeApiResult<Vec<Profile>> {
         );
         match username_entry_result {
             Ok(u) => {
-                    if let Some(entry) = u.clone().latest() {
-                        if let GetEntryResultType::Single(entry_result_item) = u.result {
-                            let agent_address = entry_result_item.headers[0].provenances()[0].source();
-                            if let Some(username) = Username::from_entry(&entry) {
-                                let profile = Profile::new(agent_address.into(), username.username);
-                                return Some(profile)
-                            } else {
-                                return None
+                if let Some(entry) = u.clone().latest() {
+                    match Username::from_entry(&entry) {
+                        Some(username) => {
+                            match u.result {
+                                GetEntryResultType::Single(item) => {
+                                    let agent_address = item.headers[0].provenances()[0].source();
+                                    let profile = Profile::new(agent_address.into(), username.username);
+                                    Some(profile)
+                                },
+                                GetEntryResultType::All(history) => {
+                                    if let Some(item) = history.items.last() {
+                                        let agent_address = item.headers[0].provenances()[0].source();
+                                        let profile = Profile::new(agent_address.into(), username.username);
+                                        Some(profile)
+                                    } else {
+                                        None
+                                    }
+                                },
                             }
-                        } else {
-                            return None
-                        }
-                    } else {
-                        return None
+                        },
+                        None => None,
                     }
+                } else {
+                    None
+                }
             },
             Err(_e) => None,
         }
@@ -258,41 +268,41 @@ pub fn get_username(agent_address: Address) -> ZomeApiResult<Option<String>> {
 //     }
 // }
 
-pub fn get_address_from_username(username: String) -> Address {
+// function for cross zome call from Contacts Zome
+pub fn get_address_from_username(username: String) -> ZomeApiResult<Address> {
     
-    let username_initials_anchor = anchor_username_initials(username.clone()).unwrap();
+    let username_initials_anchor = anchor_username_initials(username.clone())?;
 
-    // Might panic when username does not exist
     let username_entry_address = hdk::get_links(
         &username_initials_anchor,
         LinkMatch::Exactly(USERNAME_LINK_TYPE),
         LinkMatch::Exactly(&username)
-    ).unwrap().addresses()[0].clone();
+    )?.addresses();
     
-    // Might panic when no address is found
-    let username_entry_result = hdk::api::get_entry_result(
-        &username_entry_address, 
-        GetEntryOptions::new(
-            StatusRequestKind::default(),
-            true,
-            true,
-            Timeout::default()
-        )
-    );
-    match username_entry_result {
-        Ok(u) => {
-            if let Some(_entry) = u.clone().latest() {
-                if let GetEntryResultType::Single(entry_result_item) = u.result {
-                    let agent_address = entry_result_item.headers[0].provenances()[0].source();
-                    agent_address
-                } else {
-                    HashString::from("Error".to_string())
+    match username_entry_address.is_empty() {
+        false => {
+            let username_entry_result = hdk::api::get_entry_result(
+                &username_entry_address[0], GetEntryOptions::new(
+                    StatusRequestKind::default(),
+                    true,
+                    true,
+                    Timeout::default()
+                ))?;
+            match username_entry_result.result {
+                GetEntryResultType::Single(item) => {
+                    let agent_address = item.headers[0].provenances()[0].source();
+                    Ok(agent_address)
+                },
+                GetEntryResultType::All(history) => {
+                    if let Some(item) = history.items.last() {
+                        let agent_address = item.headers[0].provenances()[0].source();
+                        Ok(agent_address)
+                    } else {
+                        return Err(ZomeApiError::from("Unexpected error occured".to_string()))
+                    }
                 }
-            } else {
-                HashString::from("Error".to_string())
             }
-        }, 
-        _ => HashString::from("Error".to_string())
- 
+        },
+        true => return Err(ZomeApiError::from("No user with that username exists".to_string()))
     }
 }
