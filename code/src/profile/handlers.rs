@@ -328,7 +328,7 @@ pub fn get_address_from_username(username: String) -> ZomeApiResult<Address> {
                     }
                 }
             }
-        }
+        },
         true => return Err(ZomeApiError::from("No user with that username exists".to_string()))
     }
 }
