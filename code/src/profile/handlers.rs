@@ -263,40 +263,79 @@ pub fn get_address_from_username(username: String) -> ZomeApiResult<Address> {
     let username_initials_anchor = anchor_username_initials(username.clone())?;
 
     // Might panic when username does not exist
+    // let username_entry_address = hdk::get_links(
+    //     &username_initials_anchor,
+    //     LinkMatch::Exactly(USERNAME_LINK_TYPE),
+    //     LinkMatch::Exactly(&username)
+    // )?
+    // .addresses()
+    // .into_iter()
+    // .filter_map(|username_address| {
+    //     let username_entry_result = hdk::api::get_entry_result(
+    //         &username_address, GetEntryOptions::new(
+    //             StatusRequestKind::default(),
+    //             true,
+    //             true,
+    //             Timeout::default()
+    //         )
+    //     );
+    //     match username_entry_result {
+    //         Ok(u) => {
+    //             if let Some(_entry) = u.clone().latest() {
+    //                 if let GetEntryResultType::Single(entry_result_item) = u.result {
+    //                     let agent_address = entry_result_item.headers[0].provenances()[0].source();
+    //                     Some(agent_address)
+    //                 } else {
+    //                     return None
+    //                 }
+    //             } else {
+    //                 return None
+    //             }
+    //         }, 
+    //         _ => return None
+    //     }
+    // }).next();
+    // match username_entry_address{
+    //     Some(u) => Ok(u),
+    //     None => return Err(ZomeApiError::from(String::from("No user with that username exists")))
+    // }
     let username_entry_address = hdk::get_links(
         &username_initials_anchor,
         LinkMatch::Exactly(USERNAME_LINK_TYPE),
         LinkMatch::Exactly(&username)
     )?
-    .addresses()
-    .into_iter()
-    .filter_map(|username_address| {
+    .addresses();
+    
+    if let false = username_entry_address.is_empty() {
         let username_entry_result = hdk::api::get_entry_result(
-            &username_address, GetEntryOptions::new(
+            &username_entry_address[0], GetEntryOptions::new(
                 StatusRequestKind::default(),
                 true,
                 true,
                 Timeout::default()
             )
-        );
-        match username_entry_result {
-            Ok(u) => {
-                if let Some(_entry) = u.clone().latest() {
-                    if let GetEntryResultType::Single(entry_result_item) = u.result {
-                        let agent_address = entry_result_item.headers[0].provenances()[0].source();
-                        Some(agent_address)
-                    } else {
-                        return None
-                    }
+        )?;
+
+        match username_entry_result.result {
+            GetEntryResultType::Single(item) => {
+                let agent_address = item.headers[0].provenances()[0].source();
+                Ok(agent_address)
+            },
+            GetEntryResultType::All(history) => {
+                if let Some(item) = history.items.last() {
+                    let agent_address = item.headers[0].provenances()[0].source();
+                    Ok(agent_address)
                 } else {
-                    return None
+                    return Err(
+                        ZomeApiError::from("Unexpected error occured".to_string())
+                    )
                 }
-            }, 
-            _ => return None
+            }
         }
-    }).next();
-    match username_entry_address{
-        Some(u) => Ok(u),
-        None => return Err(ZomeApiError::from(String::from("No user with that username exists")))
+    } else {
+        return Err(
+            ZomeApiError::from("No user with that username exists".to_string())
+        )
     }
+
 }
