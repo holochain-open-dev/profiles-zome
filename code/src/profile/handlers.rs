@@ -303,8 +303,7 @@ pub fn get_address_from_username(username: String) -> ZomeApiResult<Address> {
         &username_initials_anchor,
         LinkMatch::Exactly(USERNAME_LINK_TYPE),
         LinkMatch::Exactly(&username)
-    )?
-    .addresses();
+    )?.addresses();
     
     match username_entry_address.is_empty() {
         false => {
@@ -314,8 +313,7 @@ pub fn get_address_from_username(username: String) -> ZomeApiResult<Address> {
                     true,
                     true,
                     Timeout::default()
-                )
-            )?;
+                ))?;
             match username_entry_result.result {
                 GetEntryResultType::Single(item) => {
                     let agent_address = item.headers[0].provenances()[0].source();
@@ -326,9 +324,7 @@ pub fn get_address_from_username(username: String) -> ZomeApiResult<Address> {
                         let agent_address = item.headers[0].provenances()[0].source();
                         Ok(agent_address)
                     } else {
-                        return Err(
-                            ZomeApiError::from("Unexpected error occured".to_string())
-                        )
+                        return Err(ZomeApiError::from("Unexpected error occured".to_string()))
                     }
                 }
             }
