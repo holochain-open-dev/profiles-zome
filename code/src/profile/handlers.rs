@@ -24,7 +24,12 @@ use holochain_entry_utils::HolochainEntry;
 //      anchor type: 'USERNAME_ANCHOR'
 //      anchor text: 'USERNAMES_<first character of username>'
 fn anchor_username_initials(username: String) -> ZomeApiResult<Address> {
-    let first_letter = username.chars().next().unwrap().to_ascii_lowercase();
+    let first_letter;
+    if let Some(c) = username.chars().next() {
+        first_letter = c.to_ascii_lowercase();
+    } else {
+        return Err(ZomeApiError::from("There was no username passed as an argument".to_string()))
+    }
     let text_string = format!("{}{}{}", USERNAMES_ANCHOR_TEXT, "_", first_letter);
     anchor(USERNAME_ANCHOR_TYPE.to_string(), text_string.to_string())
 }
