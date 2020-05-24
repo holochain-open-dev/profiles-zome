@@ -306,36 +306,33 @@ pub fn get_address_from_username(username: String) -> ZomeApiResult<Address> {
     )?
     .addresses();
     
-    if let false = username_entry_address.is_empty() {
-        let username_entry_result = hdk::api::get_entry_result(
-            &username_entry_address[0], GetEntryOptions::new(
-                StatusRequestKind::default(),
-                true,
-                true,
-                Timeout::default()
-            )
-        )?;
-
-        match username_entry_result.result {
-            GetEntryResultType::Single(item) => {
-                let agent_address = item.headers[0].provenances()[0].source();
-                Ok(agent_address)
-            },
-            GetEntryResultType::All(history) => {
-                if let Some(item) = history.items.last() {
+    match username_entry_address.is_empty() {
+        false => {
+            let username_entry_result = hdk::api::get_entry_result(
+                &username_entry_address[0], GetEntryOptions::new(
+                    StatusRequestKind::default(),
+                    true,
+                    true,
+                    Timeout::default()
+                )
+            )?;
+            match username_entry_result.result {
+                GetEntryResultType::Single(item) => {
                     let agent_address = item.headers[0].provenances()[0].source();
                     Ok(agent_address)
-                } else {
-                    return Err(
-                        ZomeApiError::from("Unexpected error occured".to_string())
-                    )
+                },
+                GetEntryResultType::All(history) => {
+                    if let Some(item) = history.items.last() {
+                        let agent_address = item.headers[0].provenances()[0].source();
+                        Ok(agent_address)
+                    } else {
+                        return Err(
+                            ZomeApiError::from("Unexpected error occured".to_string())
+                        )
+                    }
                 }
             }
         }
-    } else {
-        return Err(
-            ZomeApiError::from("No user with that username exists".to_string())
-        )
+        true => return Err(ZomeApiError::from("No user with that username exists".to_string()))
     }
-
 }
