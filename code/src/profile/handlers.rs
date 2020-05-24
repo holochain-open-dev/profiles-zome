@@ -257,6 +257,7 @@ pub fn get_username(agent_address: Address) -> ZomeApiResult<Option<String>> {
 //     }
 // }
 
+// function for cross zome call from Contacts Zome
 pub fn get_address_from_username(username: String) -> ZomeApiResult<Address> {
     
     let username_initials_anchor = anchor_username_initials(username.clone())?;
@@ -266,40 +267,36 @@ pub fn get_address_from_username(username: String) -> ZomeApiResult<Address> {
         &username_initials_anchor,
         LinkMatch::Exactly(USERNAME_LINK_TYPE),
         LinkMatch::Exactly(&username)
-    )?.addresses()[0].clone();
-    
-    // Might panic when no address is found
-    let username_entry_result = hdk::api::get_entry_result(
-        &username_entry_address, 
-        GetEntryOptions::new(
-            StatusRequestKind::default(),
-            true,
-            true,
-            Timeout::default()
-        )
-    );
-    match username_entry_result {
-        Ok(u) => {
-            if let Some(_entry) = u.clone().latest() {
-                if let GetEntryResultType::Single(entry_result_item) = u.result {
-                    let agent_address = entry_result_item.headers[0].provenances()[0].source();
-                    // agent_address
-                    Ok(agent_address)
-                    // Ok(json!({"address": agent_address}))
+    )?
+    .addresses()
+    .into_iter()
+    .filter_map(|username_address| {
+        let username_entry_result = hdk::api::get_entry_result(
+            &username_address, GetEntryOptions::new(
+                StatusRequestKind::default(),
+                true,
+                true,
+                Timeout::default()
+            )
+        );
+        match username_entry_result {
+            Ok(u) => {
+                if let Some(_entry) = u.clone().latest() {
+                    if let GetEntryResultType::Single(entry_result_item) = u.result {
+                        let agent_address = entry_result_item.headers[0].provenances()[0].source();
+                        Some(agent_address)
+                    } else {
+                        return None
+                    }
                 } else {
-                    return Err(ZomeApiError::from(String::from(
-                        "This username is already existing",
-                    )))
+                    return None
                 }
-            } else {
-                return Err(ZomeApiError::from(String::from(
-                    "This username is already existing",
-                )))
-            }
-        }, 
-        _ => return Err(ZomeApiError::from(String::from(
-                        "This username is already existing",
-                    )))
- 
+            }, 
+            _ => return None
+        }
+    }).next();
+    match username_entry_address{
+        Some(u) => Ok(u),
+        None => return Err(ZomeApiError::from(String::from("No user with that username exists")))
     }
 }
