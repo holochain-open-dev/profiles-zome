@@ -1,6 +1,3 @@
-#![allow(dead_code)]
-#![allow(unused_imports)]
-
 use serde_derive::{Deserialize, Serialize};
 use holochain_json_derive::DefaultJson;
 use hdk::{
@@ -17,14 +14,12 @@ use holochain_entry_utils::HolochainEntry;
 // MAIN MODULE UNDER THE PROFILE CRATE
 // contains data structure definitions and implementations, and entry definitions
 #[derive(Serialize, Deserialize, Debug, DefaultJson, Clone)]
-#[serde(rename_all = "snake_case")]
 pub struct Profile {
     pub agent_id: Address,
     pub username: String,
 }
 
 #[derive(Serialize, Deserialize, Debug, DefaultJson, Clone)]
-#[serde(rename_all = "snake_case")]
 pub struct Username {
     pub username: String,
 }

@@ -1,6 +1,3 @@
-#![allow(dead_code)]
-#![allow(unused_imports)]
-
 use hdk::{
     prelude::*,
     api::AGENT_ADDRESS,
@@ -8,57 +5,28 @@ use hdk::{
     holochain_persistence_api::hash::HashString,
 };
 use holochain_anchors::anchor;
-use crate::profile::{
+
+use super::{
     Username,
-    Profile
+    Profile,
+    strings::*,
+    HolochainEntry,
 };
-use crate::profile::strings::*;
-use holochain_entry_utils::HolochainEntry;
 
 
-// HANDLER MODULE UNDER THE PROFILE CRATE
+// HANDLER MODULE UNDER THE PROFILE CRATE 
 
-// anchor_username()
-// attach anchors to newly created usernames
-// anchor format: 
-//      anchor type: 'USERNAME_ANCHOR'
-//      anchor text: 'USERNAMES_<first character of username>'
+// helper function for creating anchor for initials
 fn anchor_username_initials(username: String) -> ZomeApiResult<Address> {
     let first_letter;
     if let Some(c) = username.chars().next() {
         first_letter = c.to_ascii_lowercase();
     } else {
-        return Err(ZomeApiError::from("There was no username passed as an argument".to_string()))
+        return Err(ZomeApiError::from("There was no username passed as an argument".to_owned()))
     }
     let text_string = format!("{}{}{}", USERNAMES_ANCHOR_TEXT, "_", first_letter);
-    anchor(USERNAME_ANCHOR_TYPE.to_string(), text_string.to_string())
+    anchor(USERNAME_ANCHOR_TYPE.to_owned(), text_string.to_owned())
 }
-
-/** Temporary Guillem solution **/
-
-// pub fn set_username(username: String) -> ZomeApiResult<()> {
-//     let new_username = Username::new(username.clone());
-
-//     let username_anchor = holochain_anchors::anchor(USERNAME_ANCHOR_TYPE.into(), USERNAMES_ANCHOR_TEXT.into())?;
-
-//     let username_address = hdk::commit_entry(&new_username.entry())?;
-
-//     hdk::link_entries(
-//         &AGENT_ADDRESS,                             // base
-//         &username_address,                          // target
-//         AGENT_USERNAME_LINK_TYPE,                   // link_type
-//         "username"                                  // tag
-//     )?;
-
-//     hdk::link_entries(
-//         &username_anchor,  
-//         &username_address,                                       
-//         USERNAME_LINK_TYPE,                         
-//         &username.to_ascii_lowercase()                      
-//     )?;
-
-//     Ok(())
-// }
 
 pub fn set_username(username: String) -> ZomeApiResult<Profile> {
     let new_username: Username = Username::new(username.clone());
@@ -83,10 +51,10 @@ pub fn set_username(username: String) -> ZomeApiResult<Profile> {
 
             // Links username to agent's address
             hdk::link_entries(
-                &AGENT_ADDRESS,                             // base
-                &username_address,                          // target
-                AGENT_USERNAME_LINK_TYPE,                   // link_type
-                "username"                                  // tag
+                &AGENT_ADDRESS,
+                &username_address,
+                AGENT_USERNAME_LINK_TYPE,
+                "username"
             )?;
 
             // links username to general anchor USERNAME_ANCHOR
@@ -106,7 +74,7 @@ pub fn set_username(username: String) -> ZomeApiResult<Profile> {
                 USERNAME_LINK_TYPE,                         
                 &username.to_ascii_lowercase()                      
             )?;
-            let profile = Profile::new(AGENT_ADDRESS.to_string().into(), username);
+            let profile = Profile::new(AGENT_ADDRESS.to_owned().into(), username);
             Ok(profile)
         } else {
             return Err(ZomeApiError::from(String::from(
@@ -188,12 +156,48 @@ pub fn get_username(agent_address: Address) -> ZomeApiResult<Option<String>> {
 
             Ok(Some(username.username))
         }
-        _ => Err(ZomeApiError::from(String::from(
-            "Agent has more than one username registered",
-        ))),
+        _ => Err(ZomeApiError::from("Agent has more than one username registered".to_owned())),
     }
 }
 
+// function for cross zome call from Contacts Zome
+pub fn get_address_from_username(username: String) -> ZomeApiResult<Address> {
+    
+    let username_initials_anchor = anchor_username_initials(username.clone())?;
+
+    let username_entry_address = hdk::get_links(
+        &username_initials_anchor,
+        LinkMatch::Exactly(USERNAME_LINK_TYPE),
+        LinkMatch::Exactly(&username)
+    )?.addresses();
+    
+    match username_entry_address.is_empty() {
+        false => {
+            let username_entry_result = hdk::api::get_entry_result(
+                &username_entry_address[0], GetEntryOptions::new(
+                    StatusRequestKind::default(),
+                    true,
+                    true,
+                    Timeout::default()
+                ))?;
+            match username_entry_result.result {
+                GetEntryResultType::Single(item) => {
+                    let agent_address = item.headers[0].provenances()[0].source();
+                    Ok(agent_address)
+                },
+                GetEntryResultType::All(history) => {
+                    if let Some(item) = history.items.last() {
+                        let agent_address = item.headers[0].provenances()[0].source();
+                        Ok(agent_address)
+                    } else {
+                        return Err(ZomeApiError::from("Unexpected error occured".to_owned()))
+                    }
+                }
+            }
+        },
+        true => return Err(ZomeApiError::from("No user with that username exists".to_owned()))
+    }
+}
 
 // pub fn update_username(username: String) -> ZomeApiResult<bool> {
 //     let link_result = hdk::get_links(
@@ -272,42 +276,3 @@ pub fn get_username(agent_address: Address) -> ZomeApiResult<Option<String>> {
 //         )))
 //     }
 // }
-
-// function for cross zome call from Contacts Zome
-pub fn get_address_from_username(username: String) -> ZomeApiResult<Address> {
-    
-    let username_initials_anchor = anchor_username_initials(username.clone())?;
-
-    let username_entry_address = hdk::get_links(
-        &username_initials_anchor,
-        LinkMatch::Exactly(USERNAME_LINK_TYPE),
-        LinkMatch::Exactly(&username)
-    )?.addresses();
-    
-    match username_entry_address.is_empty() {
-        false => {
-            let username_entry_result = hdk::api::get_entry_result(
-                &username_entry_address[0], GetEntryOptions::new(
-                    StatusRequestKind::default(),
-                    true,
-                    true,
-                    Timeout::default()
-                ))?;
-            match username_entry_result.result {
-                GetEntryResultType::Single(item) => {
-                    let agent_address = item.headers[0].provenances()[0].source();
-                    Ok(agent_address)
-                },
-                GetEntryResultType::All(history) => {
-                    if let Some(item) = history.items.last() {
-                        let agent_address = item.headers[0].provenances()[0].source();
-                        Ok(agent_address)
-                    } else {
-                        return Err(ZomeApiError::from("Unexpected error occured".to_string()))
-                    }
-                }
-            }
-        },
-        true => return Err(ZomeApiError::from("No user with that username exists".to_string()))
-    }
-}
