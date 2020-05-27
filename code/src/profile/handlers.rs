@@ -13,21 +13,6 @@ use super::{
     HolochainEntry,
 };
 
-
-// HANDLER MODULE UNDER THE PROFILE CRATE 
-
-// helper function for creating anchor for initials
-fn anchor_username_initials(username: String) -> ZomeApiResult<Address> {
-    let first_letter;
-    if let Some(c) = username.chars().next() {
-        first_letter = c.to_ascii_lowercase();
-    } else {
-        return Err(ZomeApiError::from("There was no username passed as an argument".to_owned()))
-    }
-    let text_string = format!("{}{}{}", USERNAMES_ANCHOR_TEXT, "_", first_letter);
-    anchor(USERNAME_ANCHOR_TYPE.to_owned(), text_string.to_owned())
-}
-
 pub fn set_username(username: String) -> ZomeApiResult<Profile> {
     let new_username: Username = Username::new(username.clone());
     let username_entry = new_username.entry();
@@ -197,6 +182,20 @@ pub fn get_address_from_username(username: String) -> ZomeApiResult<Address> {
         },
         true => return Err(ZomeApiError::from("No user with that username exists".to_owned()))
     }
+}
+
+// HELPER FUNCTION
+
+// create anchor for initials
+fn anchor_username_initials(username: String) -> ZomeApiResult<Address> {
+    let first_letter;
+    if let Some(c) = username.chars().next() {
+        first_letter = c.to_ascii_lowercase();
+    } else {
+        return Err(ZomeApiError::from("There was no username passed as an argument".to_owned()))
+    }
+    let text_string = format!("{}{}{}", USERNAMES_ANCHOR_TEXT, "_", first_letter);
+    anchor(USERNAME_ANCHOR_TYPE.to_owned(), text_string.to_owned())
 }
 
 // pub fn update_username(username: String) -> ZomeApiResult<bool> {
