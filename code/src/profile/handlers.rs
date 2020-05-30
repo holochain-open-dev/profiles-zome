@@ -63,11 +63,11 @@ pub fn set_username(username: String) -> ZomeApiResult<Profile> {
             Ok(profile)
         } else {
             // temporary code
-            return Err(ZomeApiError::from("{\"code\": \"0\", \"message\": \"This username is already existing\"}".to_owned()))
+            return Err(ZomeApiError::from("{\"code\": \"202\", \"message\": \"This username is already existing\"}".to_owned()))
         }
     } else {
         // temporary code
-        return Err(ZomeApiError::from("{\"code\": \"0\", \"message\": \"This agent already has a username\"}".to_owned()))
+        return Err(ZomeApiError::from("{\"code\": \"302\", \"message\": \"This agent already has a username\"}".to_owned()))
     }
 }
 
@@ -140,7 +140,7 @@ pub fn get_username(agent_address: Address) -> ZomeApiResult<Option<String>> {
             Ok(Some(username.username))
         },
         // temporary code
-        _ =>  Err(ZomeApiError::from("{\"code\": \"0\", \"message\": \"Agent has more than one username registered\"}".to_owned())),
+        _ =>  Err(ZomeApiError::from("{\"code\": \"407\", \"message\": \"Agent has more than one username registered\"}".to_owned())),
     }
 }
 
@@ -175,13 +175,13 @@ pub fn get_address_from_username(username: String) -> ZomeApiResult<Address> {
                         Ok(agent_address)
                     } else {
                         // temporary code
-                        return Err(ZomeApiError::from("{\"code\": \"0\", \"message\": \"Unexpected error occured\"}".to_owned()))
+                        return Err(ZomeApiError::from("{\"code\": \"800\", \"message\": \"Unexpected error occured\"}".to_owned()))
                     }
                 }
             }
         },
         // temporary code
-        true => return Err(ZomeApiError::from("{\"code\": \"0\", \"message\": \"No user with that username exists\"}".to_owned()))
+        true => return Err(ZomeApiError::from("{\"code\": \"204\", \"message\": \"No user with that username exists\"}".to_owned()))
     }
 }
 
@@ -193,7 +193,7 @@ fn anchor_username_initials(username: String) -> ZomeApiResult<Address> {
     if let Some(c) = username.chars().next() {
         first_letter = c.to_ascii_lowercase();
     } else {
-        return Err(ZomeApiError::from("{\"code\": \"0\", \"message\": \"There was no username passed as an argument\"}".to_owned()))
+        return Err(ZomeApiError::from("{\"code\": \"406\", \"message\": \"There was no username passed as an argument\"}".to_owned()))
     }
     let text_string = format!("{}{}{}", USERNAMES_ANCHOR_TEXT, "_", first_letter);
     anchor(USERNAME_ANCHOR_TYPE.to_owned(), text_string.to_owned())
