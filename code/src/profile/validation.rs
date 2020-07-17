@@ -4,9 +4,7 @@ use hdk::{
     },
     api::AGENT_ADDRESS,
 };
-use crate::profile::{
-  Username
-};
+use super::Username;
 
 pub fn validate_delete_username(old_entry: Username, old_entry_header: ChainHeader, validation_data: hdk::ValidationData) -> Result<(), String> {
     hdk::debug(format!("validate_entry_delete_old_entry: {:?}", old_entry)).ok();
@@ -16,10 +14,10 @@ pub fn validate_delete_username(old_entry: Username, old_entry_header: ChainHead
         if o.source() == p.source() {
           Ok(())
         } else {
-            Err("Agent who did not author is trying to delete".to_string())
+            Err("Agent who did not author is trying to delete".to_owned())
         }
     } else {
-        Err("No provenance on this validation_data".to_string())
+        Err("No provenance on this validation_data".to_owned())
     }
 }
 

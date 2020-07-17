@@ -9,7 +9,10 @@ use hdk::{
 use hdk_proc_macros::zome;
 use serde_derive::{Deserialize, Serialize};
 pub mod profile;
-use profile::Username;
+use profile::{
+    Username,
+    Profile,
+};
 
 // MAIN FILE FOR THE PROFILE ZOME
 // contains calls to entry definitions and functions.
@@ -46,12 +49,12 @@ mod profile_zome {
 
     // ZOME CALLS
     #[zome_fn("hc_public")]
-    fn set_username(username: String) -> ZomeApiResult<Username> {
+    fn set_username(username: String) -> ZomeApiResult<Profile> {
         profile::handlers::set_username(username)
     }
 
     #[zome_fn("hc_public")]
-    fn get_all_agents() -> ZomeApiResult<Vec<Username>> {
+    fn get_all_agents() -> ZomeApiResult<Vec<Profile>> {
         profile::handlers::get_all_agents()
     }
 
@@ -66,12 +69,17 @@ mod profile_zome {
     }
 /* 
     #[zome_fn("hc_public")]
-    fn update_profile(profile: Profile) -> ZomeApiResult<bool> {
-        profile::handlers::update_profile(profile)
-    } */
-
-    #[zome_fn("hc_public")]
-    fn delete_my_username() -> ZomeApiResult<bool> {
-        profile::handlers::delete_my_username()
+    fn get_address_from_username(username: String) -> ZomeApiResult<Address> {
+        profile::handlers::get_address_from_username(username)
     }
+
+    // #[zome_fn("hc_public")]
+    // fn update_profile(profile: Profile) -> ZomeApiResult<bool> {
+    //     profile::handlers::update_profile(profile)
+    // }
+
+    // #[zome_fn("hc_public")]
+    // fn delete_my_username() -> ZomeApiResult<bool> {
+    //     profile::handlers::delete_my_username()
+    // }
 }
