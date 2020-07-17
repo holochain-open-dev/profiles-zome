@@ -5,7 +5,7 @@ import json from 'rollup-plugin-json';
 
 const pkg = require('./package.json');
 
-const libraryName = 'hc-profiles';
+const libraryName = 'hod-profiles';
 
 export default {
   input: `src/${libraryName}.ts`,
@@ -39,5 +39,4 @@ export default {
     // Resolve source maps to the original source
     sourceMaps(),
   ],
-  preserveSymlinks: true,
 };

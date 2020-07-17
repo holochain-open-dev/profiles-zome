@@ -1,66 +1,72 @@
-import { HolochainProvider } from '@uprtcl/holochain-provider';
+import { CallZome } from '../types';
 
-import { ProfilesBindings } from '../bindings';
-import { ApolloClientModule } from '@uprtcl/graphql';
-import { ApolloClient, gql } from 'apollo-boost';
-
-export const resolvers = {
-  Query: {
-    async allAgents(_, __, { container }) {
-      const profilesProvider: HolochainProvider = container.get(
-        ProfilesBindings.ProfilesProvider
-      );
-
-      const allAgents = await profilesProvider.call('get_all_agents', {});
-      return allAgents.map((agent) => ({
-        id: agent.agent_id,
-        username: agent.username,
-      }));
+/**
+ * 
+ * @param callZome callZome function from @holochain/hc-web-client
+ * @param instanceId the instance id in which the profile zome is available
+ * @param zome the profiles zome name, by default "profiles"
+ */
+export function setupProfilesResolvers(
+  callZome: CallZome,
+  instanceId: string,
+  zome: string = 'profiles'
+) {
+  return {
+    Query: {
+      async allAgents(_, __) {
+        const allAgents = await callZome(
+          instanceId,
+          zome,
+          'get_all_agents'
+        )({});
+        return allAgents.map((agent) => ({
+          id: agent.agent_id,
+          username: agent.username,
+        }));
+      },
+      async me(_, __) {
+        const address = await callZome(instanceId, zome, 'get_my_address')({});
+        return { id: address };
+      },
     },
-    async me(_, __, { container }) {
-      const profilesProvider: HolochainProvider = container.get(
-        ProfilesBindings.ProfilesProvider
-      );
-
-      const address = await profilesProvider.call('get_my_address', {});
-      return { id: address };
+    Me: {
+      agent(parent) {
+        return { id: parent.id };
+      },
     },
-  },
-  Me: {
-    agent(parent) {
-      return { id: parent.id };
-    },
-  },
-  Agent: {
-    id(parent) {
-      return parent.id;
-    },
-    username(parent, _, { container, cache }) {
-      if (parent.username) return parent.username;
+    Agent: {
+      id(parent) {
+        return parent.id;
+      },
+      username(parent, _, { cache }) {
+        if (parent.username) return parent.username;
 
-      const cachedAgent = cache['data'].data[parent.id];
-      if (cachedAgent && cachedAgent.username) return cachedAgent.username;
+        const cachedAgent = cache['data'].data[parent.id];
+        if (cachedAgent && cachedAgent.username) return cachedAgent.username;
 
-      const profilesProvider: HolochainProvider = container.get(
-        ProfilesBindings.ProfilesProvider
-      );
-
-      return profilesProvider.call('get_username', {
-        agent_address: parent.id,
-      });
+        return callZome(
+          instanceId,
+          zome,
+          'get_username'
+        )({
+          agent_address: parent.id,
+        });
+      },
     },
-  },
-  Mutation: {
-    async setUsername(_, { username }, { container }) {
-      const profilesProvider: HolochainProvider = container.get(
-        ProfilesBindings.ProfilesProvider
-      );
-
-      const agent = await profilesProvider.call('set_username', { username });
-      return {
-        id: agent.agent_id,
-        username,
-      };
+    Mutation: {
+      async setUsername(_, { username }) {
+        const agent = await callZome(
+          instanceId,
+          zome,
+          'set_username'
+        )({
+          username,
+        });
+        return {
+          id: agent.agent_id,
+          username,
+        };
+      },
     },
-  },
-};
+  };
+}

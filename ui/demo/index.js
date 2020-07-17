@@ -1,26 +1,40 @@
+import { connect } from '@holochain/hc-web-client';
+import { makeExecutableSchema } from 'graphql-tools';
+import { SchemaLink } from '@apollo/client/link/schema';
+import { InMemoryCache } from '@apollo/client';
+import { ApolloClient } from '@apollo/client/core';
 import {
-  MicroOrchestrator,
-  i18nextBaseModule,
-} from '@uprtcl/micro-orchestrator';
-import { ApolloClientModule } from '@uprtcl/graphql';
-import { ProfilesModule } from '../dist/hc-profiles.es5';
-import {
-  HolochainConnectionModule,
-  HolochainConnection,
-} from '@uprtcl/holochain-provider';
+  profilesTypeDefs,
+  setupProfilesResolvers,
+  installProfilesModule,
+} from '../dist/hod-profiles.es5';
 
-(async function () {
-  const connection = new HolochainConnection({ host: 'ws://localhost:8888' });
+async function loadApp() {
+  const { callZome } = await connect({ url: 'ws://localhost:888' });
 
-  const hcConnectionModule = new HolochainConnectionModule(connection);
+  const profilesResolvers = setupProfilesResolvers(
+    callZome,
+    'test-instance',
+    'profiles'
+  );
 
-  const profiles = new ProfilesModule('test-instance');
+  const executableSchema = makeExecutableSchema({
+    typeDefs: [profilesTypeDefs, ...otherTypeDefs],
+    resolvers: profilesResolvers,
+  });
 
-  const orchestrator = new MicroOrchestrator();
-  await orchestrator.loadModules([
-    new i18nextBaseModule(),
-    new ApolloClientModule(),
-    hcConnectionModule,
-    profiles,
-  ]);
-})();
+  const schemaLink = new SchemaLink({
+    schema: executableSchema,
+    context: {},
+  });
+
+  const apolloClient = new ApolloClient({
+    typeDefs: [profileTypeDefs, ...otherTypeDefs],
+    link: schemaLink,
+    cache: new InMemoryCache(),
+  });
+
+  installProfilesModule({ apolloClient: apolloClient });
+}
+
+loadApp();
