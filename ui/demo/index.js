@@ -1,7 +1,7 @@
 import { connect } from '@holochain/hc-web-client';
 import { makeExecutableSchema } from 'graphql-tools';
 import { SchemaLink } from '@apollo/client/link/schema';
-import { InMemoryCache } from '@apollo/client';
+import { InMemoryCache } from '@apollo/client/cache';
 import { ApolloClient } from '@apollo/client/core';
 import {
   profilesTypeDefs,

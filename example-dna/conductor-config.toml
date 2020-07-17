@@ -11,8 +11,8 @@ public_address = 'HcScjN8wBwrn3tuyg89aab3a69xsIgdzmX5P9537BqQZ5A7TEZu7qCY4Xzzjhm
 test_agent = true
 
 [[dnas]]
-file = '/home/holo/Desktop/ProfileZomeFork/profiles-zome/example-dna/dist/example-dna.dna.json'
-hash = 'QmVg1WrK1Br1SdeN5YSdMrDqjkByun4Yt5hB1yhq86W8as'
+file = '/home/guillem/projects/holochain/open-dev/profiles-zome/example-dna/dist/example-dna.dna.json'
+hash = 'QmTkMMAyScKYCKFiobuZhHUGXtqXq9zXpn25P2R1iT2TeM'
 id = 'hc-run-dna'
 
 [[instances]]
