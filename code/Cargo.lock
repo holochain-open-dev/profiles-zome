@@ -232,9 +232,9 @@ checksum = "a06f77d526c1a601b7c4cdd98f54b5eaabffc14d5f2f0296febdc7f357c6d3ba"
 
 [[package]]
 name = "futures"
-version = "0.3.2"
+version = "0.3.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "dda826c2f9351e68bc87b9037d91d818f24384993ecbb37f711e1f71a83182b5"
+checksum = "1e05b85ec287aac0dc34db7d4a569323df697f9c55b99b15d6b4ef8cde49f613"
 dependencies = [
  "futures-channel",
  "futures-core",
@@ -247,9 +247,9 @@ dependencies = [
 
 [[package]]
 name = "futures-channel"
-version = "0.3.4"
+version = "0.3.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f0c77d04ce8edd9cb903932b608268b3fffec4163dc053b3b402bf47eac1f1a8"
+checksum = "f366ad74c28cca6ba456d95e6422883cfb4b252a83bed929c83abfdbbf2967d5"
 dependencies = [
  "futures-core",
  "futures-sink",
@@ -267,9 +267,9 @@ dependencies = [
 
 [[package]]
 name = "futures-core"
-version = "0.3.4"
+version = "0.3.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f25592f769825e89b92358db00d26f965761e094951ac44d3663ef25b7ac464a"
+checksum = "59f5fff90fd5d971f936ad674802482ba441b6f09ba5e15fd8b39145582ca399"
 
 [[package]]
 name = "futures-core-preview"
@@ -279,9 +279,9 @@ checksum = "4b141ccf9b7601ef987f36f1c0d9522f76df3bba1cf2e63bfacccc044c4558f5"
 
 [[package]]
 name = "futures-executor"
-version = "0.3.4"
+version = "0.3.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f674f3e1bcb15b37284a90cedf55afdba482ab061c407a9c0ebbd0f3109741ba"
+checksum = "10d6bb888be1153d3abeb9006b11b02cf5e9b209fda28693c31ae1e4e012e314"
 dependencies = [
  "futures-core",
  "futures-task",
@@ -302,9 +302,9 @@ dependencies = [
 
 [[package]]
 name = "futures-io"
-version = "0.3.4"
+version = "0.3.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a638959aa96152c7a4cddf50fcb1e3fede0583b27157c26e67d6f99904090dc6"
+checksum = "de27142b013a8e869c14957e6d2edeef89e97c289e69d042ee3a49acd8b51789"
 
 [[package]]
 name = "futures-io-preview"
@@ -314,9 +314,9 @@ checksum = "082e402605fcb8b1ae1e5ba7d7fdfd3e31ef510e2a8367dd92927bb41ae41b3a"
 
 [[package]]
 name = "futures-macro"
-version = "0.3.4"
+version = "0.3.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9a5081aa3de1f7542a794a397cde100ed903b0630152d0973479018fd85423a7"
+checksum = "d0b5a30a4328ab5473878237c447333c093297bded83a4983d10f4deea240d39"
 dependencies = [
  "proc-macro-hack 0.5.15",
  "proc-macro2 1.0.12",
@@ -340,9 +340,9 @@ dependencies = [
 
 [[package]]
 name = "futures-sink"
-version = "0.3.4"
+version = "0.3.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3466821b4bc114d95b087b850a724c6f83115e929bc88f1fa98a3304a944c8a6"
+checksum = "3f2032893cb734c7a05d85ce0cc8b8c4075278e93b24b66f9de99d6eb0fa8acc"
 
 [[package]]
 name = "futures-sink-preview"
@@ -355,15 +355,18 @@ dependencies = [
 
 [[package]]
 name = "futures-task"
-version = "0.3.4"
+version = "0.3.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7b0a34e53cf6cdcd0178aa573aed466b646eb3db769570841fda0c7ede375a27"
+checksum = "bdb66b5f09e22019b1ab0830f7785bcea8e7a42148683f99214f73f8ec21a626"
+dependencies = [
+ "once_cell",
+]
 
 [[package]]
 name = "futures-util"
-version = "0.3.4"
+version = "0.3.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "22766cf25d64306bedf0384da004d05c9974ab104fcc4528f1236181c18004c5"
+checksum = "8764574ff08b701a084482c3c7031349104b07ac897393010494beaa18ce32c6"
 dependencies = [
  "futures-channel",
  "futures-core",
@@ -372,6 +375,7 @@ dependencies = [
  "futures-sink",
  "futures-task",
  "memchr",
+ "pin-project",
  "pin-utils",
  "proc-macro-hack 0.5.15",
  "proc-macro-nested",
@@ -424,9 +428,9 @@ dependencies = [
 
 [[package]]
 name = "hdk"
-version = "0.0.47-alpha1"
+version = "0.0.50-alpha4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "28c4a8857f18f1e0a0fdc99215d351c50c1f586bdc730b0891c73e932e7094df"
+checksum = "60804b8e175e7c780ebaf96fd23a77154f198e5917ad0caf4bad4a5a70110844"
 dependencies = [
  "bitflags",
  "env_logger",
@@ -445,9 +449,9 @@ dependencies = [
 
 [[package]]
 name = "hdk_proc_macros"
-version = "0.0.47-alpha1"
+version = "0.0.50-alpha4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fe9e8ac454b1f4295e32ee983ca0ad955bc093dd5417cc19f32f608874a13577"
+checksum = "dc889852d07292ae4e1df1131e0c88b4ee3a305661b311b66991d227d4758631"
 dependencies = [
  "hdk",
  "proc-macro2 0.4.27",
@@ -466,8 +470,8 @@ dependencies = [
 
 [[package]]
 name = "holochain_anchors"
-version = "0.2.5"
-source = "git+https://github.com/holochain/holochain_anchors#4aa2fe1fe1b2ada376037a0e814ef165383fcd42"
+version = "0.2.6"
+source = "git+https://github.com/holochain/holochain_anchors?branch=update-0.0.50-alpha4#b95edcbc6009986ff33dd54f5e52a5902f93a8ad"
 dependencies = [
  "hdk",
  "holochain_json_derive 0.0.23",
@@ -478,9 +482,9 @@ dependencies = [
 
 [[package]]
 name = "holochain_core_types"
-version = "0.0.47-alpha1"
+version = "0.0.50-alpha4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4ba6bc13a50d65f189e16c28849b2721952e29fc1c48e52b80c0c673c52f2979"
+checksum = "5780becd396b0ff79afa1cc4d97ddb9badb8ba85cebad61406bf5541c2eb2084"
 dependencies = [
  "arrayref",
  "backtrace",
@@ -514,9 +518,9 @@ dependencies = [
 
 [[package]]
 name = "holochain_entry_utils"
-version = "0.1.2"
+version = "0.1.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2a3ba5f0efff1e1477ff50945565503f70ce6392cd32a5cb7c6c336a21eabbea"
+checksum = "68fe29df8decf0023d7c1fcfd27223125db5571bd1debf3409b882cb4419ebae"
 dependencies = [
  "hdk",
  "holochain_json_derive 0.0.30",
@@ -578,9 +582,9 @@ dependencies = [
 
 [[package]]
 name = "holochain_locksmith"
-version = "0.0.47-alpha1"
+version = "0.0.50-alpha4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "75fb93e123d26ea83940834548f82a6138c827b3a259b477547bc6b3a85a79c4"
+checksum = "dc125badd471ce56cb8c8e5e3e469edcdfd01e0c8abe24f6a6334a3c55f05010"
 dependencies = [
  "backtrace",
  "chrono",
@@ -641,9 +645,9 @@ dependencies = [
 
 [[package]]
 name = "holochain_wasm_utils"
-version = "0.0.47-alpha1"
+version = "0.0.50-alpha4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f9e84c9faea1eecd4fa56fd4837e7199a19a716286baa28eee4751cd3468a448"
+checksum = "b26ea1eab15b5559fc40097db913adb8c4d69af1a22c33bc811b618c62cc9453"
 dependencies = [
  "holochain_core_types",
  "holochain_json_api",
@@ -889,6 +893,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2069a3ae3dad97a4ae47754e8f47e5d2f1fd32ab7ad8a84bb31d051faa59cc3c"
 
 [[package]]
+name = "once_cell"
+version = "1.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0b631f7e854af39a1739f401cf34a8a013dfe09eac4fa4dba91e9768bd28168d"
+
+[[package]]
 name = "output_vt100"
 version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -937,6 +947,26 @@ name = "percent-encoding"
 version = "2.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d4fd5641d01c8f18a23da7b6fe29298ff4b55afcccdf78973b24cf3175fee32e"
+
+[[package]]
+name = "pin-project"
+version = "0.4.22"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "12e3a6cdbfe94a5e4572812a0201f8c0ed98c1c452c7b8563ce2276988ef9c17"
+dependencies = [
+ "pin-project-internal",
+]
+
+[[package]]
+name = "pin-project-internal"
+version = "0.4.22"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6a0ffd45cf79d88737d7cc85bfd5d2894bee1139b356e616fe85dc389c61aaf7"
+dependencies = [
+ "proc-macro2 1.0.12",
+ "quote 1.0.4",
+ "syn 1.0.18",
+]
 
 [[package]]
 name = "pin-utils"
